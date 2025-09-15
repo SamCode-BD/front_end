@@ -11,6 +11,13 @@ import {
     AccordionTrigger,
   } from "@/components/ui/accordion"
 
+import {
+  Tabs,
+  TabsTrigger,
+  TabsContent,
+  TabsList
+} from "@/components/ui/tabs"
+
   import {
     Button
   } from "@/components/ui/button"
@@ -18,6 +25,8 @@ import {
   import {
     Button2 
   } from "@/components/ui/button2"
+
+  import words from '@/components/transparentlogo.png';
    
   export function BoneMenu() {
 
@@ -25,40 +34,66 @@ import {
     const router = useRouter();
 
     return (
-      <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="item-1">
-          <AccordionTrigger>
-            <h4>Cranial Metrics</h4>
-          </AccordionTrigger>
-          <AccordionContent>
-            {metrics_list.cranial_metrics.map((name, i) => <Button className="text-left" variant="ghost" name={name} key={i}> {name} </Button>)}
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="item-2">
-          <AccordionTrigger>
-            <h4>Cranial Nonmetrics</h4>
-          </AccordionTrigger>
-          <AccordionContent>
-            Put Cranial Nonmetrics Here 
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="item-3">
-          <AccordionTrigger> 
-            <h4>Postcranial Metrics</h4>
-          </AccordionTrigger>
-          <AccordionContent>
-            <div className="flex flex-col gap-2 w-24">
-              {metrics_list.postcranial_metrics.map((name, i) => 
-              <Button2 className="text-left" variant="ghost" name={name} key={i} 
-              onClick={() => {
-                setBoneName(name);
-                router.push(`/bone-editor?boneName=${encodeURIComponent(name)}`);
-              }}
-            > 
-            {name} </Button2>)}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      <>
+        <div className="absolute top-0 left-0 flex items-start gap-4 border-b-2 w-full bg-gradient-to-r from-maroon to-maroon2">
+          <img src='/sammy_logo.svg' alt="Logo" width="50" height="20" className="ml-5 mt-1" />
+          <h1 className="text-xl text-white font-medium ml-10">Salisbury University Bone Database</h1>
+        </div>
+        <h1>Add Bone</h1>
+        <div className="flex flex-col">
+          <Tabs defaultValue="cranial" className="w-[400px]">
+            <TabsList className="w-full mt-4">
+              <TabsTrigger value="cranial">Cranial</TabsTrigger>
+              <TabsTrigger value="postcranial">Postcranial</TabsTrigger>
+            </TabsList>
+            <TabsContent value="cranial">
+              <div className="flex flex-wrap gap-2 w-24">
+                <div>
+                  {metrics_list.cranial_metrics.map((name, i) => <Button className="text-left" variant="ghost" name={name} key={i}> {name} </Button>)}
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="postcranial">
+              <div className="flex max-h-150 gap-2 w-24">
+                <div>
+                  {metrics_list.postcranial_metrics.map((name, i) => 
+                  <Button2 className="text-left" variant="ghost" name={name} key={i} 
+                  onClick={() => {
+                    setBoneName(name);
+                    router.push(`/bone-editor?boneName=${encodeURIComponent(name)}`);
+                    }}
+                  > 
+                  {name} </Button2>)}
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </>
     )
+/*
+    return (
+      <div className="flex flex-col">
+        <div>
+          <h1>Add Bone</h1>
+        </div>
+        <div className="flex max-h-150 gap-2 w-24">
+          <div>
+            {metrics_list.cranial_metrics.map((name, i) => <Button className="text-left" variant="ghost" name={name} key={i}> {name} </Button>)}
+          </div>
+          <div>
+          {metrics_list.postcranial_metrics.map((name, i) => 
+          <Button2 className="text-left" variant="ghost" name={name} key={i} 
+          onClick={() => {
+            setBoneName(name);
+            router.push(`/bone-editor?boneName=${encodeURIComponent(name)}`);
+            }}
+          > 
+          {name} </Button2>)}
+          </div>
+        </div>
+      </div>
+
+    )
+    */
   }

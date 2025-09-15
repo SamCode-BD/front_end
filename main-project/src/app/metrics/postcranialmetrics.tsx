@@ -79,8 +79,25 @@ export const postcranialmetrics_list = {
     ],
 
     talus: [
-        
+        "Talus Height"
     ],
+
+    C2: [
+        "Max C2 Height"
+    ],
+
+    C3C7: [
+        "Max C3-C7 Height"
+    ],
+
+    T1T12: [
+        "Max T1-T12 Height"
+    ],
+
+    L1L5: [
+        "Max L1-L5 Height"
+    ],
+
 
     fallback: [
 

@@ -1,7 +1,6 @@
 "use client"
 
 import Form from "@/components/Form"
-import logo from '@/components/sammy_logo.svg';
 
 export function App() {
   return (
@@ -10,7 +9,7 @@ export function App() {
           <div className="w-full h-1/2 absolute bottom-0 bg-maroon "/>
           <div className="w-full h-1/2 absolute top-0 bg-gold">
             <div className="flex justify-center items-center h-screen">
-              <img src={logo} alt="Logo" width="200" height="200" />
+              <img src='/sammy_logo.svg' alt="Logo" width="200" height="200" />
             </div>
           </div>
         </div>
@@ -21,7 +20,7 @@ export function App() {
           <div className="w-full h-1/2 absolute bottom-0 bg-maroon "/>
           <div className="w-full h-1/2 absolute top-0 bg-gold">
             <div className="flex justify-center items-center h-screen">
-              <img src={logo} alt="Logo" width="200" height="200" />
+              <img src='/sammy_logo.svg' alt="Logo" width="200" height="200" />
             </div>
           </div>
         </div>

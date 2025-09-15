@@ -54,6 +54,7 @@ h4 {
 }
 @theme inline {
   --color-maroon: #8a0000;
+  --color-maroon2: #A50000;
   --color-gold: #ffc420;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
