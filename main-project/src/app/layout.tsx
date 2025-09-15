@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import '@radix-ui/themes/styles.css'
+import {Theme} from '@radix-ui/themes'
+import { ConfirmProvider } from '@/components/confirm-dialog-context';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +30,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ConfirmProvider>
+          <Theme>
+          {children}
+          </Theme>
+        </ConfirmProvider>
       </body>
     </html>
   );

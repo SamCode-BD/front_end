@@ -1,3 +1,4 @@
+"use client"
 async function getIndData(): Promise<Individual[]> {
   // Fetch data from your API here.
   return [
@@ -62,6 +63,7 @@ async function getDentalData(): Promise<Dental[]> {
 }
 
 import { Button } from "@/components/ui/button"
+import { useRouter } from 'next/navigation';
 
   import {
     Tabs,
@@ -77,11 +79,58 @@ import { Individual, indColumns } from "./columns/ind-columns"
 import { Dental, dentalColumns } from "./columns/dental-columns"
 import { Bone, boneColumns } from "./columns/bone-columns"
 
-export default async function Main(){
+import {useEffect, useState} from 'react';
+import { useConfirmDialog } from '@/components/confirm-dialog-context';
 
-  const indData = await getIndData()
-  const boneData = await getBoneData();
-  const dentalData = await getDentalData();
+
+export default function Main(){
+  const router = useRouter();
+
+
+  const [indData, setIndData] = useState<Individual[]>([]);
+  const [boneData, setBoneData] = useState<Bone[]>([]);
+  const [dentalData, setDentalData] = useState<Dental[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const confirm = useConfirmDialog();
+
+  useEffect(() => {
+    async function fetchData() {
+      const [ind, bone, dental] = await Promise.all([
+        getIndData(),
+        getBoneData(),
+        getDentalData(),
+      ]);
+      setIndData(ind);
+      setBoneData(bone);
+      setDentalData(dental);
+      setLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div className="p-4">Loading...</div>;
+  }
+
+  
+
+  const confirmAddIndividual = async() => {
+    const confirmed = await confirm({
+                  title:"",
+                  description:"This will create an entire skeleton. Are you sure you want to continue?",
+                  confirmText:"OK",
+                  cancelText:"Cancel"
+                })
+    if(!confirmed) {
+      return;
+    }
+    else {
+      setLoading(true);
+      router.push('/skeleton-editor');
+    }
+  }
 
   return (
     <div>
@@ -94,7 +143,8 @@ export default async function Main(){
             </TabsList>
           <TabsContent value="bone">
             <div>
-              <DataTable columns={boneColumns} data={boneData} type={"Bone"}/>
+              <DataTable columns={boneColumns} data={boneData} type={"Bone"}
+              onAddClick={() => router.push('/add-bone')}/>
             </div>
           </TabsContent>
         
@@ -102,7 +152,8 @@ export default async function Main(){
           value="individual"
           className="">
             <div>
-                <DataTable columns={indColumns} data={indData} type={"Individual"}/>
+                <DataTable columns={indColumns} data={indData} type={"Individual"}
+                onAddClick={confirmAddIndividual}/>
             </div>
           </TabsContent>
 
@@ -111,7 +162,8 @@ export default async function Main(){
           value="dental"
           className="">
             <div>
-              <DataTable columns={dentalColumns} data={dentalData} type={"Dental"}/>
+              <DataTable columns={dentalColumns} data={dentalData} type={"Dental"}
+              onAddClick={() => router.push("/add-bone")}/>
             </div>
           </TabsContent>
 

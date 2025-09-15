@@ -35,18 +35,18 @@ import {
   SelectItem
 } from "@/components/ui/select"
 
-import { useRouter } from 'next/navigation';
-
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   type: string
+  onAddClick: () => void
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   type,
+  onAddClick
 }: DataTableProps<TData, TValue>) {
 
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -55,8 +55,6 @@ export function DataTable<TData, TValue>({
   )
   
   const [filterType, setFilterType] = React.useState("name")
-
-  const router = useRouter();
 
   const table = useReactTable({
     data,
@@ -96,9 +94,7 @@ export function DataTable<TData, TValue>({
             className="w-full"
           />
          <Button className="bg-maroon hover:bg-maroon/90 text-white hover:text-white" variant="outline"
-             onClick={() => {
-              router.push(`/add-bone`);
-            }}
+             onClick={onAddClick}
           >
             Add {type}
           </Button>

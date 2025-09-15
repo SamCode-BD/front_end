@@ -1,37 +1,32 @@
 
 import { Button } from "@/components/ui/button"
-import "../globals.css"
+import "@/app/globals.css"
 import { Input } from "@/components/ui/input"
 
-function locField(){
+function TaxField(){
 return (
     <div className = "flex flex-col ml-5 space-y-5 m-auto">
         
         <div className="flex items-center justify-between space-x-2">
-            <p>Parvorder: </p>
+            <p>Broad Region: </p>
             <Input className="h-[40px] w-2/3 max-w-sm bg-white"></Input>
         </div>
 
         <div className="flex items-center justify-between space-x-2">
-            <p>Superfamily: </p>
+            <p>Country: </p>
             <Input className="h-[40px] w-2/3 max-w-sm bg-white"></Input>
         </div>
 
         <div className="flex items-center justify-between space-x-2">
-            <p>Family: </p>
+            <p>Locality: </p>
             <Input className="h-[40px] w-2/3 max-w-sm bg-white"></Input>
         </div>
 
         <div className="flex items-center justify-between space-x-2">
-            <p>Subfamily: </p>
-            <Input className="h-[40px] w-2/3 max-w-sm bg-white"></Input>
-        </div>
-
-        <div className="flex items-center justify-between space-x-2">
-            <p>Genus: </p>
+            <p>Region: </p>
             <Input className="h-[40px] w-2/3 max-w-sm bg-white"></Input>
         </div>
     </div>
 
 )
-} export default locField
+} export default TaxField

@@ -33,7 +33,7 @@ export default function ResponsiveLayout({ Left, Right }: LayoutProps) {
                     <SidebarTrigger/>
                 </div>
         
-                <div className="p-4">
+                <div className="p-4 h-screen">
                     <Right />
                 </div>
 
@@ -46,24 +46,3 @@ export default function ResponsiveLayout({ Left, Right }: LayoutProps) {
     </div>
     )
   }
-  
-
-/*
-export default function Home(){
-    return(
-        <div className="grid grid-cols-1 lg:grid-cols-5">
-            {/* Left Sidebar - hidden below lg */
-        /*}
-            <div className="bg-gray-400/10 hidden lg:block lg:col-span-1">
-                <Left />
-            </div>
-
-            {/* Right Content - full width below lg, spans 4 columns at lg */
-        /*}
-            <div className="col-span-1 lg:col-span-4">
-                <Right />
-            </div>
-        </div>
-    )
-}
-*/

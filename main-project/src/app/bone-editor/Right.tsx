@@ -8,9 +8,9 @@ import {
     TabsList,
     TabsTrigger,
   } from "@/components/ui/tabs"
-  import Measurements from "./measurements"
+  import Measurements from "@/components/editor/measurements"
   import { Button } from "@/components/ui/button"
-  import Taphonomy from "./Taphonomy"
+  import Taphonomy from "@/components/editor/Taphonomy"
  
 function Right() {
 

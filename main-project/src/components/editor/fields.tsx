@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button"
-import "../globals.css"
+import "@/app/globals.css"
 import { Input } from "@/components/ui/input"
 
 function Field(){

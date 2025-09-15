@@ -1,5 +1,5 @@
-import { postcranialmetrics_list } from "../metrics/postcranialmetrics"
-import MeasurementsBox from "../../components/ui/measurements_box"
+import { postcranialmetrics_list } from "@/app/metrics/postcranialmetrics"
+import MeasurementsBox from "@/components/ui/measurements_box"
 import React, {useState, useContext, useEffect} from 'react';
 
 function Measurements( {selectedBone} ){
