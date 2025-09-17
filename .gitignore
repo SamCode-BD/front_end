@@ -1,2 +1,3 @@
 */node_modules
 /main-project/.next
+.env.development

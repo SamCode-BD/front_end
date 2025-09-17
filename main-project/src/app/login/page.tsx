@@ -1,9 +1,9 @@
-import { App } from "./login"
+import { LoginPage } from "./login"
 
 export default function Home(){
     return(
         <div>
-            <App></App>
+            <LoginPage/>
         </div>
     )
 }

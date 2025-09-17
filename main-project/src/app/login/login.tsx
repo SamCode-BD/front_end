@@ -1,9 +1,28 @@
 "use client"
 
-import Form from "@/components/Form"
+import LoginForm from "@/components/LoginForm"
+import CreateAccountForm from "@/components/CreateAccountForm"
 import logo from '@/components/sammy_logo.svg';
+import {useState} from 'react'
 
-export function App() {
+export function LoginPage() {
+
+  const enum PAGE_TYPE {
+    LoginForm,
+    CreateAccountForm
+  };
+
+  const [pageStatus, setPageStatus] = useState(PAGE_TYPE.LoginForm);
+  const GetPageContents = () => {
+    switch(pageStatus) {
+      default:
+      case (PAGE_TYPE.LoginForm):
+        return(<LoginForm goCreateAccount = {() => setPageStatus(PAGE_TYPE.CreateAccountForm)}/>)
+      case (PAGE_TYPE.CreateAccountForm):
+        return(<CreateAccountForm goLogin = {() => setPageStatus(PAGE_TYPE.LoginForm)}/>)
+    }
+  }
+
   return (
     <div className="flex w-full h-screen">
         <div className="hidden relative lg:w-1/5 lg:flex h-full items-center justify-center">
@@ -15,7 +34,7 @@ export function App() {
           </div>
         </div>
         <div className="w-full flex items-center justify-center lg:w-3/5">
-          <Form/>
+          {GetPageContents()}
         </div>
         <div className="hidden relative lg:w-1/5 lg:flex h-full items-center justify-center">
           <div className="w-full h-1/2 absolute bottom-0 bg-maroon "/>
