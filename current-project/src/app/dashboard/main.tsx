@@ -138,7 +138,7 @@ export default function Main(){
         <Tabs defaultValue="bone" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="bone">Bone</TabsTrigger>
-              <TabsTrigger value="individual">Individual</TabsTrigger>
+              <TabsTrigger value="individual">Individuals</TabsTrigger>
               <TabsTrigger value="dental">Dental</TabsTrigger>
             </TabsList>
           <TabsContent value="bone">

@@ -82,19 +82,16 @@ export const postcranialmetrics_list = {
         "Talus Height"
     ],
 
-    C2: [
-        "Max C2 Height"
+    cervical_vertebrae: [
+        "C2", 
+        "Max C3-C7 Height" //expand this into individuals and add a box for if unknown, repeat for remaning vertebrae
     ],
 
-    C3C7: [
-        "Max C3-C7 Height"
-    ],
-
-    T1T12: [
+    thoracic_vertebrae: [
         "Max T1-T12 Height"
     ],
 
-    L1L5: [
+    lumbar_vertebrae: [
         "Max L1-L5 Height"
     ],
 

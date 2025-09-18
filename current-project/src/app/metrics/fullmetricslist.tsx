@@ -12,10 +12,9 @@ export const metrics_list = {
         "Fibula",
         "Calcaneus",
         "Talus",
-        "C2",
-        "C3-C7",
-        "T1-12",
-        "L1-L5",
+        "Cervical Vertebrae",
+        "Thoracic Vertebrae",
+        "Lumbar Vertebrae",
     ],
 
     cranial_metrics: [
