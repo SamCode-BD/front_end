@@ -38,6 +38,7 @@ export type PostcranialRow = {
     rowType : RowType,
     inputRange? : InputRange
     isHeader ?: boolean
+    noNameCell ?: boolean
 }
 
 const row_types: Record<string, RowType> = {
@@ -51,15 +52,18 @@ const row_types: Record<string, RowType> = {
     "TenBoxes" : {numBoxRows: 2, numColumns: 5, columnText: ["Prox Epi", "Prox 1/3", "Mid 1/3", "Dist 1/3", "Dist Epi"], boxType: BoxTypeEnum.CHECKBOX},
     "Patella" : {numBoxRows: 2, numColumns: 1, columnText: ["Prox Epi"], boxType: BoxTypeEnum.CHECKBOX},
     "LRQ" : {numBoxRows: 1, numColumns: 3, columnText: ["L", "R", "?"], boxType: BoxTypeEnum.CHECKBOX},
-    "LRQN" : {numBoxRows: 1, numColumns: 4, columnText: ["L", "R", "?", "N"], boxType: BoxTypeEnum.CHECKBOX}
+    "LRN" : {numBoxRows: 1, numColumns: 3, columnText: ["L", "R", "#"], boxType: BoxTypeEnum.NUMINPUT},
+    "LRQN" : {numBoxRows: 1, numColumns: 4, columnText: ["L", "R", "?", "#"], boxType: BoxTypeEnum.NUMINPUT}
 }
 
 const make_row = (boneName_ : string, type_ : string, inputRange_ ?: InputRange) : PostcranialRow => {
+    const noNameCell_ = (boneName_ == "") 
+    
     if(inputRange_){
-        return {boneName : boneName_, rowType : row_types[type_], inputRange: inputRange_}
+        return {boneName : boneName_, rowType : row_types[type_], inputRange: inputRange_, noNameCell : noNameCell_}
     }
     else {
-        return {boneName : boneName_, rowType : row_types[type_]}
+        return {boneName : boneName_, rowType : row_types[type_], noNameCell : noNameCell_}
     }
 }
 
@@ -139,7 +143,7 @@ const carpal_rows: PostcranialRow[] = carpal_names.map(name => make_row(name, "L
 
 
 const metacarpal_names = ["1", "2", "3", "4", "5", "Unidentifiable"];
-const metacarpal_rows: PostcranialRow[] = metacarpal_names.map(name => make_row(name, "LRQ"))
+const metacarpal_rows: PostcranialRow[] = metacarpal_names.map(name => make_row(name, "LRN", {min: 0, max: 10}))
     .concat(make_row("Unidentifiable", "SingleNum"));
 
 
@@ -148,7 +152,7 @@ const tarsal_rows: PostcranialRow[] = tarsal_names.map(name => make_row(name, "L
     .concat(make_row("Unidentifiable", "SingleNum"));
 
 const metatarsal_names = ["1", "2", "3", "4", "5", "Unidentifiable"];
-const metatarsal_rows: PostcranialRow[] = metatarsal_names.map(name => make_row(name, "LRQ"))
+const metatarsal_rows: PostcranialRow[] = metatarsal_names.map(name => make_row(name, "LRN", {min: 0, max: 10}))
     .concat(make_row("Unidentifiable", "SingleNum"));
 
 const phalanges_rows: PostcranialRow[] = [

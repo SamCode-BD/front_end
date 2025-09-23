@@ -28,7 +28,24 @@ export default function PostcranialInventory() {
     function createBox(row : PostcranialRow) {
         switch(row.rowType.boxType) {
             case BoxTypeEnum.CHECKBOX:
-                return <input  type="checkbox"></input>
+                return <Checkbox.Root
+                        className="w-6 h-6 mx-2 border border-gray-400 rounded flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <Checkbox.Indicator>
+                          <svg
+                            className="w-4 h-4 text-blue-600"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        </Checkbox.Indicator>
+                      </Checkbox.Root>
                         
             case BoxTypeEnum.SELECT:
                 return row.inputRange ?<Select.Root >
@@ -48,19 +65,31 @@ export default function PostcranialInventory() {
         
     }
     function createInventoryCell(row : PostcranialRow) {
-        return(<Table.Cell className="table-cell inventory">
-            <div className="flex flex-col items-center" style={{display: "grid", gridTemplateColumns: row.rowType.numColumns, gridTemplateRows: row.rowType.numBoxRows + 1}}>
-                {Array.from({ length: row.rowType.numColumns }).map((_, i) => (
-                    <div style={{gridColumn: i + 1}}key={i}>
-                        {row.rowType.columnText[i] && <p>{row.rowType.columnText[i]}</p>}
-                        {Array.from({ length: row.rowType.numBoxRows }).map((__, j) => (
-                            <div style={{gridColumn: i + 1, gridRow: j + 1}}>
-                                {createBox(row)}
-                            </div>
-                            
-                        ))}
+        return(<Table.Cell className="table-cell inventory" colSpan={row.noNameCell? 2 : 1}>
+            <div className="flex flex-col items-center" >
+                {row.rowType.columnText.length > 0 &&
+                    <div className="flex justify-center gap-8 mb-1 w-full ">
+                        {row.rowType.columnText.map((label, index) =>
+                        <span
+                            key={index}
+                            className="text-sm font-medium text-gray-700"
+                            style={{ width: "48px", textAlign: "center", whiteSpace: "nowrap" }}
+                        >
+                            {label}
+                        </span>
+                        )}
                     </div>
-                ))}
+    }
+                    <div className="flex flex-col gap-2 w-full">
+                        {Array.from({length: row.rowType.numBoxRows}).map((_, rowIndex) =>
+                        <div key={rowIndex} className="flex justify-center gap-6 w-full">
+                            {Array.from({ length: row.rowType.numColumns }).map((_, colIndex) => (
+                                <div key={colIndex}>
+                                    {createBox(row)}
+                                </div>
+                            ))}
+                        </div>)}
+                    </div>
             </div>
         </Table.Cell>)
     }
@@ -93,7 +122,7 @@ export default function PostcranialInventory() {
                                 onMouseEnter={() => setHoveredRowIndex(j)}
                                 onMouseLeave={() => setHoveredRowIndex(null)}
                                 className = "align-top">
-                                    <Table.RowHeaderCell className="table-row-header-cell bone">{row.boneName}</Table.RowHeaderCell>
+                                    {!row.noNameCell && <Table.RowHeaderCell className="table-row-header-cell bone">{row.boneName}</Table.RowHeaderCell>}
                                     {createInventoryCell(row)}
                                     <Table.Cell className="table-cell edit flex justify-center items-center">
                                         {hoveredRowIndex === j && (
