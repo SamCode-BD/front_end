@@ -4,9 +4,9 @@ import { RadioGroup, TextArea } from "@radix-ui/themes"
 import {useState} from 'react'
 
 const getImage = (trait, code) => {
-    console.log(mms_list.dict[trait][2][code].src);
+    //console.log(mms_list.dict[trait][2][code].src);
         if(trait != null && code != null) {
-            console.log(mms_list.dict[trait][2] != null && mms_list.dict[trait][2][code].src);
+            //console.log(mms_list.dict[trait][2] != null && mms_list.dict[trait][2][code].src);
             return mms_list.dict[trait][2] != null && mms_list.dict[trait][2][code].src;
         }
     }

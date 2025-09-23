@@ -17,7 +17,7 @@ export function ConfirmDialog({
   open,
   title = 'Are you sure?',
   description = 'Do you want to proceed?',
-  confirmText = 'Yes',
+  confirmText = '',
   cancelText = 'Cancel',
   onConfirm,
   onCancel,
@@ -27,9 +27,9 @@ export function ConfirmDialog({
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="fixed inset-0 bg-black/40 z-50" />
         <AlertDialog.Content className="fixed top-1/2 left-1/2 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg z-50 focus:outline-none">
-          <AlertDialog.Title className="text-lg font-semibold text-gray-900">
+          <h3 className="text-base font-semibold text-gray-900">
             {title}
-          </AlertDialog.Title>
+          </h3>
           <AlertDialog.Description className="mt-2 text-sm text-gray-600">
             {description}
           </AlertDialog.Description>
@@ -42,6 +42,7 @@ export function ConfirmDialog({
                 {cancelText}
               </button>
             </AlertDialog.Cancel>
+            {confirmText.trim() !== '' && 
             <AlertDialog.Action asChild>
               <button
                 onClick={onConfirm}
@@ -50,6 +51,7 @@ export function ConfirmDialog({
                 {confirmText}
               </button>
             </AlertDialog.Action>
+            }
           </div>
         </AlertDialog.Content>
       </AlertDialog.Portal>

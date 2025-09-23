@@ -30,7 +30,7 @@ export default function Craniometrics() {
 
                         <Table.Body>
                             {craniometrics_list.metrics_cranium.map((info, i) => 
-                            <Table.Row>
+                            <Table.Row key = {i}>
                                 <Table.RowHeaderCell>{info.split("\t")[0]}</Table.RowHeaderCell>
                                 <Table.Cell>{info.split("\t")[1]}</Table.Cell>
                                 <Table.Cell>{info.split("\t")[2]}</Table.Cell>

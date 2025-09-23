@@ -12,7 +12,12 @@ import {
   import { Button } from "@/components/ui/button"
   import Taphonomy from "@/components/editor/Taphonomy"
   import Craniometrics from "@/components/editor/Craniometrics"
+  import PostcranialMetrics from '@/components/editor/PostcranialMetrics';
   import CranialNonmetrics from "@/components/editor/CranialNonmetrics"
+import CranialInventory from '@/components/editor/CranialInventory';
+import PostcranialInventory from '@/components/editor/PostcranialInventory';
+import PermanentInventory from '@/components/editor/PermanentInventory';
+import DeciduousInventory from '@/components/editor/DeciduousInventory';
  
 function Right() {
 
@@ -37,7 +42,7 @@ function Right() {
                             <TabsList className = "grid w-full grid-cols-3">
                                 <TabsTrigger value="Craniometrics">Metrics</TabsTrigger>
                                 <TabsTrigger value="Cranial Nonmetrics">Nonmetrics</TabsTrigger>
-                                <TabsTrigger value="Inventory">Inventory</TabsTrigger>
+                                <TabsTrigger value="Cranial Inventory">Inventory</TabsTrigger>
                             </TabsList>
                             <TabsContent value="Craniometrics">
                                 <Craniometrics/>
@@ -45,8 +50,8 @@ function Right() {
                             <TabsContent value="Cranial Nonmetrics">
                                 <CranialNonmetrics/>
                             </TabsContent>
-                            <TabsContent value="Inventory">
-                                <div className="bone-container"></div>
+                            <TabsContent value="Cranial Inventory">
+                                <CranialInventory/>
                             </TabsContent>
                         </Tabs>
                     </TabsContent>
@@ -56,14 +61,11 @@ function Right() {
                                 <TabsTrigger value="Postcranial Metrics">Metrics</TabsTrigger>
                                 <TabsTrigger value="Postcranial Inventory">Inventory</TabsTrigger>
                             </TabsList>
-                            <TabsContent value="Craniometrics">
-                                <div className="bone-container"></div>
+                            <TabsContent value="Postcranial Metrics">
+                                <PostcranialMetrics/>
                             </TabsContent>
-                            <TabsContent value="Cranial Nonmetrics">
-                                <div className="bone-container"></div>
-                            </TabsContent>
-                            <TabsContent value="Inventory">
-                                <div className="bone-container"></div>
+                            <TabsContent value="Postcranial Inventory">
+                                <PostcranialInventory/>
                             </TabsContent>
                         </Tabs>
                     </TabsContent>
@@ -74,10 +76,10 @@ function Right() {
                                 <TabsTrigger value="Dental Deciduous">Deciduous</TabsTrigger>
                             </TabsList>
                             <TabsContent value="Dental Permanent">
-                                <div className="bone-container"></div>
+                               <PermanentInventory/>
                             </TabsContent>
                             <TabsContent value="Dental Deciduous">
-                                <div className="bone-container"></div>
+                                <DeciduousInventory/>
                             </TabsContent>
                         </Tabs>
                     </TabsContent>

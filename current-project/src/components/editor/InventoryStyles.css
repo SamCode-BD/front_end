@@ -1,0 +1,35 @@
+/* You can put this in a CSS file or tailwind config */
+
+.table-root {
+  width: fit-content; /* Shrinks table width to content */
+  border-collapse: collapse;
+}
+
+.table-header-cell,
+.table-cell,
+.table-row-header-cell {
+  padding: 8px 0px;
+  text-align: center; /* center all columns, can adjust per column below */
+  vertical-align: middle;
+  white-space: nowrap; /* prevent wrapping to keep alignment */
+}
+
+/* Optional: align columns differently */
+
+.table-header-cell.bone,
+.table-row-header-cell.bone {
+  text-align: left;
+  width: 100px; /* fixed or min width */
+}
+
+.table-header-cell.inventory,
+.table-cell.inventory {
+  text-align: center;
+  width: 220px;
+}
+
+.table-header-cell.edit,
+.table-cell.edit {
+  text-align: center;
+  width: 50px;
+}
