@@ -11,6 +11,7 @@ export default function LoginForm(props : FormProps){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handleSignIn = async () => {
@@ -48,6 +49,10 @@ export default function LoginForm(props : FormProps){
             console.error('Create account error:', error);
             setMessage(`Server error: ${error.message || 'Unexpected issue occurred. Please try again later.'}`);
         }
+    }
+
+      if (loading) {
+        return <div className="p-4">Loading...</div>;
     }
 
     return (
@@ -90,6 +95,11 @@ export default function LoginForm(props : FormProps){
                     bg-maroon hover:bg-maroon text-white text-lg font-medium'
                     onClick={handleSignIn}>
                         Sign In    
+                    </button>
+                    <button className='active:scale-[.98] active:duration-75 hover:scale-[1.02] ease-in-out transition-all py-3 rounded-3xl 
+                    bg-maroon hover:bg-maroon text-white text-lg font-medium'
+                    onClick={() => {setLoading(true); router.push("/dashboard")}}>
+                        I don't care, just take me to the site  
                     </button>
                     <button className='flex rounded-3xl py-3 border-2 border-gray-200 items-center justify-center gap-2 active:scale-[.98] 
                     active:duration-75 hover:scale-[1.02] ease-in-out transition-all'>
