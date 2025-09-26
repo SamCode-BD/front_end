@@ -1,7 +1,5 @@
 "use client"
 
-import { useSearchParams } from 'next/navigation';
-
 import {
     Tabs,
     TabsContent,
@@ -20,11 +18,6 @@ import PermanentInventory from '@/components/editor/PermanentInventory';
 import DeciduousInventory from '@/components/editor/DeciduousInventory';
  
 function Right() {
-
-    const searchParams = useSearchParams();
-    const boneName = searchParams.get('boneName');
-    const selectedBone = boneName;
-
     
     return(
 
