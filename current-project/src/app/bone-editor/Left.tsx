@@ -1,4 +1,6 @@
 "use client"
+import {useRouter} from 'next/navigation'
+import {useState} from 'react'
 
 import { Button } from "@/components/ui/button"
 import "@/app/globals.css"
@@ -18,6 +20,12 @@ import {
 
 function Left() {
 
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
+    if (loading) {
+        return <div className="p-4">Loading...</div>;
+    }
+
     return(
 
     <div className = "flex-col h-screen overflow-y-scroll">
@@ -25,7 +33,8 @@ function Left() {
         <div className = "flex py-10 justify-center items-center whitespace-nowrap">
             <Button 
                 variant="outline" 
-                className="lg:w-1/2 rounded-2xl bg-maroon text-white border-maroon hover:bg-maroon/90 hover:text-white"> 
+                className="lg:w-1/2 rounded-2xl bg-maroon text-white border-maroon hover:bg-maroon/90 hover:text-white"
+                onClick={() => {setLoading(true); router.push("/dashboard")}}> 
                 Exit
             </Button>
         </div>
