@@ -11,7 +11,7 @@ import {
   } from "@/components/ui/tabs"
   import Measurements from "@/components/editor/measurements"
   import { Button } from "@/components/ui/button"
-  import Taphonomy from "@/components/editor/Taphonomy"
+  import Taphonomy from "./Taphonomy" //Not using the one from the editor folder - different layout
  
 function InnerRight() {
 

@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Table, TextField } from "@radix-ui/themes";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import { cranial_inventory_list } from "./cranial-inventory-list";
-import Taphonomy from "./Taphonomy"
+import Taphonomy from "@/components/editor/Taphonomy"
 import "./InventoryStyles.css"
 
 export default function CranialInventory() {
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
+  const [selectedBone, setSelectedBone] = useState("")
 
   function getCheckboxLabels(numBoxes: number): string[] {
     if (numBoxes === 1) return [];
@@ -97,7 +98,8 @@ export default function CranialInventory() {
                     }
                     <Table.Cell className="table-cell edit flex justify-center items-center">
                       {hoveredRowIndex === i && (
-                        <button className="w-10">Edit</button>
+                        <button className="w-10"
+                                onClick={() => setSelectedBone(bone.boneName)}>Edit</button>
                       )}
                     </Table.Cell>
                   </Table.Row>
@@ -106,7 +108,9 @@ export default function CranialInventory() {
             </Table.Body>
           </Table.Root>
         </div>
+        {selectedBone != "" && <Taphonomy boneName={selectedBone}/>}
       </div>
+      
     </div>
   );
 }

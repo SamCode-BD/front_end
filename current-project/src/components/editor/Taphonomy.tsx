@@ -39,14 +39,14 @@ function Taphonomy(props) {
         }
         if(activeSubmenu == "modifications") {
             return (<div>
-                <div className="flex flex-col md:flex-row justify-center gap-10">
+                <div className="flex flex-col justify-center gap-10">
                     <div className="p-2.5 flex flex-col justify-start items-start">
-                        <h3>Curation Modifications</h3>
+                        <h3 className="break-words leading-normal">Curation Modifications</h3>
                         {taphonomy_options.curation_modifications.map((name, i) => <TCheckbox name={name} key={i}/>)}
                     </div>
                     
                     <div className="p-2.5 flex flex-col justify-start items-start">
-                        <h3>Cultural Modifications</h3>
+                        <h3 className="break-words leading-normal" >Cultural Modifications</h3>
                         {taphonomy_options.cultural_modifications.map((name, i) => <TCheckbox name={name} key={i}/>)}
                     </div>
                 </div>
@@ -64,7 +64,8 @@ function Taphonomy(props) {
     }
 
         return(
-            <div>
+            <div className="w-full">
+                <h3>{props.boneName}</h3>
                 <div className = "w-1/2 justify-left">
                     <label htmlFor="bone-cond">Bone Condition: </label>
                     <div className="mt-1 flex gap-2 text-left">
@@ -76,17 +77,16 @@ function Taphonomy(props) {
                         <p className = "" >Surface Exposure </p>
                     </div>
                 </div>
-                <div className = "flex flex-col md:w-full md:flex-row mt-4 justify-center items-center [padding-inline:10px] gap-2">
-                    <div className = "flex w-full gap-2">
+                <div>
+                    <div className="flex flex-wrap w-full gap-2 justify-center">
                         <Button variant="outline" onClick={() => setActiveSubmenu("bone color")}>Bone Color</Button>
                         <Button variant="outline" onClick={() => setActiveSubmenu("staining")}>Staining</Button>
                         <Button variant="outline" onClick={() => setActiveSubmenu("surface damage")}>Surface Damage</Button>
-                    </div>
-                    <div className="flex w-full gap-2">
                         <Button variant="outline" onClick={() => setActiveSubmenu("adherent materials")}>Adherent Materials</Button>
                         <Button variant="outline" onClick={() => setActiveSubmenu("modifications")}>Modifications</Button>
                         <Button variant="outline" onClick={() => setActiveSubmenu("comments")}>Comments</Button>
                     </div>
+
                 </div>
                 {getContents()}
             </div>

@@ -11,6 +11,7 @@ import type { PostcranialCategory, PostcranialRow, InputRange } from "./postcran
 import { postcranial_inventory_list } from "./postcranial-inventory-list";
 import {BoxTypeEnum} from "./postcranial-inventory-list"
 import "./InventoryStyles.css"
+import Taphonomy from "@/components/editor/Taphonomy"
 
 type PostcranialType = {
     name: string
@@ -25,6 +26,7 @@ const pc_types: Record<string, PostcranialType> = {
 
 export default function PostcranialInventory() {
     const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
+    const [selectedBone, setSelectedBone] = useState("");
     function createBox(row : PostcranialRow) {
         switch(row.rowType.boxType) {
             case BoxTypeEnum.CHECKBOX:
@@ -126,7 +128,8 @@ export default function PostcranialInventory() {
                                     {createInventoryCell(row)}
                                     <Table.Cell className="table-cell edit flex justify-center items-center">
                                         {hoveredRowIndex === j && (
-                                            <button className="w-10">Edit</button>
+                                            <button className="w-10"
+                                            onClick={() => setSelectedBone(row.boneName)}>Edit</button>
                                         )}
                                     </Table.Cell>
                                 </Table.Row>
@@ -136,7 +139,9 @@ export default function PostcranialInventory() {
                     </TabsContent>
                     )}
                 </Tabs>
+                
                 </div>
+            {selectedBone != "" && <Taphonomy boneName={selectedBone}/>}
         </div>)
     }
     return(<div className="bone-container">
