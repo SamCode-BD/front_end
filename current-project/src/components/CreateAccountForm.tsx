@@ -1,5 +1,5 @@
 const API_URL_ROOT = process.env.NEXT_PUBLIC_API_URL;
-import {useState} from 'react'
+import {useRef, useState} from 'react'
 import ReCAPTCHA from 'react-google-recaptcha';
 
 interface FormProps {
@@ -13,8 +13,10 @@ export default function CreateAccountForm(props : FormProps) {
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const captchaRef = useRef<ReCAPTCHA>(null);
 
     const handleCreateAccount = async () => {
+        
         if (!username || !email || !password) {
         setMessage('All fields are required.');
         return;
@@ -35,16 +37,24 @@ export default function CreateAccountForm(props : FormProps) {
             const data = await response.json();
 
             if (response.ok) {
-                setMessage('Account created. Please check your email to verify your account.');
+                //setMessage('Account created. Please check your email to verify your account.');
+                setMessage('Account created [verified by default]');
                 setTimeout(() => {
                 props.goLogin();
                 }, 1500);
             } else {
-                setMessage(data.message || 'Error creating account');
+                setMessage(data.message || data.error || "");
             }
         } catch (error: any) {
             console.error('Create account error:', error);
             setMessage(`Server error: ${error.message || 'Unexpected issue occurred. Please try again later.'}`);
+        }
+        finally {
+            if (captchaRef.current) {
+                captchaRef.current.reset();
+            }
+            setCaptchaToken(null);
+
         }
     }
 
@@ -91,6 +101,7 @@ export default function CreateAccountForm(props : FormProps) {
             </div>
             <ReCAPTCHA
                 sitekey={"6Leint8rAAAAANfcaXKg8YlByf1Da9yCtCyEzClL"}
+                ref={captchaRef}
                 onChange={(token) => setCaptchaToken(token)}
             />
             <div className='mt-8 flex justify-center items-center'>

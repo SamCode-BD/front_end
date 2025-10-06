@@ -2,9 +2,9 @@
 
 import Left from "@/components/editor/Left"
 import Right from "./Right"
-import {redirect} from "next/navigation"
-import useAuth from "@/lib/useAuth"
 import ResponsiveLayout from "@/components/editor/responsiveLayout"
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 function Left2(){
     return(
@@ -24,10 +24,12 @@ function Right2(){
 
 export default function Home(){
     
-    const user = useAuth();
-
-    if (!user) {
-        redirect('/login'); // Next.js App Router redirect
-    }
+    const router = useRouter();
+    useEffect(() => {
+        const token = localStorage.getItem('authToken')
+        if (!token) {
+          router.push('/login')
+        }
+      }, [])
     return <ResponsiveLayout Left={Left2} Right={Right2} />
 }

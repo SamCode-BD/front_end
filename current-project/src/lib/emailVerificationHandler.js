@@ -13,7 +13,7 @@ async function sendVerificationEmail(user) {
 
   const verifyUrl = `http://localhost:3001/api/verify-email?token=${token}`;
 
-  await resend.emails.send({
+  const {data, error} = await resend.emails.send({
     from: process.env.EMAIL_FROM,
     to: user.email,
     subject: 'Verify your email',
@@ -23,6 +23,12 @@ async function sendVerificationEmail(user) {
       <a href="${verifyUrl}">${verifyUrl}</a>
       <p>This link expires in 24 hours.</p>
     `,
+    
   });
+
+  if (error) {
+    res.status(500).json({ error: 'Account created, but failed to send verification email.' });
+    throw new Error(`Failed to send verification email: ${error.message}`);
+  }
 }
 module.exports={sendVerificationEmail}

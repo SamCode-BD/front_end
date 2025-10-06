@@ -43,8 +43,8 @@ db.connect(err => {
 app.post('/api/register', async (req, res) => {
   try {
 
-    await captchaHandler(req, res); //returns error message
-    await applyRateLimit(req, res); //returns error message
+    await captchaHandler(req, res);
+    await applyRateLimit(req, res);
 
     const { name, email, password, roles } = req.body;
     if (!email || !password) {
@@ -53,7 +53,8 @@ app.post('/api/register', async (req, res) => {
     const hashed = await bcrypt.hash(password, 10);
 
     db.query(
-      'INSERT INTO user (name, email, password, roles, isVerified) VALUES (?, ?, ?, ?, FALSE)',
+      //'INSERT INTO user (name, email, password, roles, isVerified VALUES (?, ?, ?, ?, FALSE)',
+      'INSERT INTO user (name, email, password, roles, isVerified VALUES (?, ?, ?, ?, TRUE)',
       [name, email, hashed, roles || 'user'],
       async (err, result) => {
         if (err) return res.status(500).json({ error: err.message });

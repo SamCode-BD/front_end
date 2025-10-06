@@ -45,9 +45,11 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.4",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-google-recaptcha": "^2.1.9",
     "cross-env": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.2",
