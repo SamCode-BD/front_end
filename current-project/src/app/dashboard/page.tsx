@@ -1,7 +1,16 @@
+"use client"
+
 import Main from "./main"
 import Header from "@/components/header"
+import {redirect} from "next/navigation"
+import useAuth from "@/lib/useAuth"
 
-export default async function DemoPage() {
+export default function DemoPage() {
+  const user = useAuth();
+
+  if (!user) {
+    redirect('/login'); // Next.js App Router redirect
+  }
 
   return (
     <div>

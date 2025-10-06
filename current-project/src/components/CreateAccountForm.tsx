@@ -1,5 +1,6 @@
 const API_URL_ROOT = process.env.NEXT_PUBLIC_API_URL;
 import {useState} from 'react'
+import ReCAPTCHA from 'react-google-recaptcha';
 
 interface FormProps {
     goLogin: () => void
@@ -11,6 +12,7 @@ export default function CreateAccountForm(props : FormProps) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
     const handleCreateAccount = async () => {
         if (!username || !email || !password) {
@@ -26,13 +28,14 @@ export default function CreateAccountForm(props : FormProps) {
                 name: username,
                 email: email,
                 password: password,
-                roles: 'user'
+                roles: 'user',
+                captchaToken
                 })
             });
             const data = await response.json();
 
             if (response.ok) {
-                setMessage('Account created successfully! Please login.');
+                setMessage('Account created. Please check your email to verify your account.');
                 setTimeout(() => {
                 props.goLogin();
                 }, 1500);
@@ -86,6 +89,10 @@ export default function CreateAccountForm(props : FormProps) {
                 <div className='mt-4 text-sm text-red-500 font-medium'>{message}</div>
                 )}
             </div>
+            <ReCAPTCHA
+                sitekey={"6Leint8rAAAAANfcaXKg8YlByf1Da9yCtCyEzClL"}
+                onChange={(token) => setCaptchaToken(token)}
+            />
             <div className='mt-8 flex justify-center items-center'>
                 <button className='text-maroon text-base font-medium active:scale-[.98] active:duration-75 hover:scale-[1.02] 
                 ease-in-out transition-all' onClick={handleCreateAccount}>Create Account</button>

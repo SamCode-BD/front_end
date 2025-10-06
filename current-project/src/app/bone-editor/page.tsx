@@ -2,7 +2,8 @@
 
 import Left from "@/components/editor/Left"
 import Right from "./Right"
-
+import {redirect} from "next/navigation"
+import useAuth from "@/lib/useAuth"
 import ResponsiveLayout from "@/components/editor/responsiveLayout"
 
 function Left2(){
@@ -22,5 +23,11 @@ function Right2(){
 }
 
 export default function Home(){
+    
+    const user = useAuth();
+
+    if (!user) {
+        redirect('/login'); // Next.js App Router redirect
+    }
     return <ResponsiveLayout Left={Left2} Right={Right2} />
 }

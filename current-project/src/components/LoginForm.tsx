@@ -37,9 +37,12 @@ export default function LoginForm(props : FormProps){
                 setMessage(data.error || 'Login failed.');
                 return;
             }
-
+            
             // Save token in localStorage or cookies
             localStorage.setItem('token', data.token);
+            
+            //document.cookie = `token=${data.token}; path=/;`;
+
 
             // Redirect or update app state here
             setMessage("Login successful!");

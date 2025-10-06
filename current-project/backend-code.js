@@ -1,5 +1,8 @@
 require('dotenv').config({ path: '.env.development' });
+const { applyRateLimit } = require('./src/lib/rateLimiter.js');
+const { captchaHandler } = require('./src/lib/captchaHandler.js');
 
+const { sendVerificationEmail } = require('./src/lib/emailVerificationHandler.js');
 
 const express = require('express');
 const mysql = require('mysql2');
@@ -39,6 +42,10 @@ db.connect(err => {
 // Register new user
 app.post('/api/register', async (req, res) => {
   try {
+
+    await captchaHandler(req, res); //returns error message
+    await applyRateLimit(req, res); //returns error message
+
     const { name, email, password, roles } = req.body;
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password required' });
@@ -46,26 +53,67 @@ app.post('/api/register', async (req, res) => {
     const hashed = await bcrypt.hash(password, 10);
 
     db.query(
-      'INSERT INTO user (name, email, password, roles) VALUES (?, ?, ?, ?)',
+      'INSERT INTO user (name, email, password, roles, isVerified) VALUES (?, ?, ?, ?, FALSE)',
       [name, email, hashed, roles || 'user'],
-      (err, result) => {
+      async (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
-        res.status(201).json({ id: result.insertId, name, email, roles });
+
+        const newUser = { id: result.insertId, email };
+        try {
+          await sendVerificationEmail(newUser);
+
+          return res.status(201).json({
+            message: 'Account created. Please check your email to verify your account.',
+            id: result.insertId,
+            name,
+            email,
+            roles,
+          });
+        } catch (emailErr) {
+          console.error('Email send error:', emailErr);
+          return res.status(500).json({ error: 'Account created, but failed to send verification email.' });
+        }
       }
     );
   } catch (err) {
-    res.status(500).json({ error: err.message });
+      return;
+  }
+});
+
+app.get('/api/verify-email', async (req, res) => {
+  const { token } = req.query;
+
+  if (!token) return res.status(400).send('Missing token');
+
+  try {
+    const decoded = jwt.verify(token, process.env.EMAIL_JWT_SECRET);
+
+    db.query(
+      'UPDATE user SET isVerified = true WHERE user_id = ?',
+      [decoded.id],
+      (err, result) => {
+        if (err) return res.status(500).send(`Database error: ${err.message}`);
+        res.send('Email verified successfully. You can now log in.');
+      }
+    );
+  } catch (err) {
+    console.error(err);
+    res.status(400).send('Invalid or expired token');
   }
 });
 
 // Login user
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
+  await applyRateLimit(req, res);
   const { email, password } = req.body;
   db.query('SELECT * FROM user WHERE email = ?', [email], async (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     if (!rows.length) return res.status(401).json({ error: 'Invalid email' });
-
+    
     const user = rows[0];
+    if (!user.isVerified) return res.status(401).json({ error: 'Please verify your email first.' });
+
+  
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(401).json({ error: 'Invalid password' });
 
