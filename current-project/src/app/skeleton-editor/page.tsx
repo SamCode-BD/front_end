@@ -28,9 +28,9 @@ export default function Home(){
     const router = useRouter();
     useEffect(() => {
         const token = localStorage.getItem('authToken')
-        if (!token) {
-            router.push('/login')
-        }
+        //if (!token) {
+         //   router.push('/login')
+       // }
         }, [])
     return <ResponsiveLayout Left={Left2} Right={Right2} />
 }
