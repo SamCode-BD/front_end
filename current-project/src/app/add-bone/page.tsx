@@ -11,11 +11,15 @@ export default function Home(){
     useEffect(() => {
         
         const token = localStorage.getItem('authToken')
+        /*
         if (!token) {
             router.push('/login')
         }
+        */
         }, [])
-    return(
+
+
+    return( 
     <div>
         <Header></Header>
         <div className="add-bone-container">

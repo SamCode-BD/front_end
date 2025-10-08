@@ -1,32 +1,50 @@
-
 import { Button } from "@/components/ui/button"
 import "@/app/globals.css"
 import { Input } from "@/components/ui/input"
 
-function Field(){
-return (
-    <div className = "flex flex-col ml-5 space-y-5 m-auto">
-        
-        <div className="flex items-center justify-between space-x-2">
-            <p>ID: </p>
-            <Input className="h-[40px] w-2/3 max-w-sm bg-white"></Input>
-        </div>
+function Field() {
+    
 
-        <div className="flex items-center justify-between space-x-2">
-            <p>Museum: </p>
-            <Input className="h-[40px] w-2/3 max-w-sm bg-white"></Input>
-        </div>
+    return (
+        <div className = "flex flex-col ml-5 space-y-5 m-auto">
+            
+            <div className="flex items-center justify-between space-x-2">
+                <p>ID: </p>
+                <Input 
+                    className="h-[40px] w-2/3 max-w-sm bg-white"
+                    //value={formData.id}
+                    //onChange={(e) => handleChange('id', e.target.value)}
+                />
+            </div>
 
-        <div className="flex items-center justify-between space-x-2">
-            <p>Sex: </p>
-            <Input className="h-[40px] w-2/3 max-w-sm bg-white"></Input>
-        </div>
+            <div className="flex items-center justify-between space-x-2">
+                <p>Museum: </p>
+                <Input 
+                    className="h-[40px] w-2/3 max-w-sm bg-white"
+                    //value={formData.museum}
+                    //onChange={(e) => handleChange('museum', e.target.value)}
+                />
+            </div>
 
-        <div className="flex items-center justify-between space-x-2">
-            <p>User: </p>
-            <Input className="h-[40px] w-2/3 max-w-sm bg-white"></Input>
-        </div>
-    </div>
+            <div className="flex items-center justify-between space-x-2">
+                <p>Sex: </p>
+                <Input 
+                    className="h-[40px] w-2/3 max-w-sm bg-white"
+                    //value={formData.sex}
+                    //onChange={(e) => handleChange('sex', e.target.value)}
+                />
+            </div>
 
+            <div className="flex items-center justify-between space-x-2">
+                <p>User: </p>
+                <Input 
+                    className="h-[40px] w-2/3 max-w-sm bg-white"
+                    //value={formData.user}
+                    //onChange={(e) => handleChange('user', e.target.value)}
+                />
+            </div>
+        </div>
     )   
-} export default Field
+} 
+
+export default Field
