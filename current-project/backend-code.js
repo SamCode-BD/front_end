@@ -127,6 +127,76 @@ app.post('/api/login', async (req, res) => {
   });
 });
 
+// Save bone measurements (complex insert)
+app.post('/api/bones/measurements', async (req, res) => {
+  try {
+    const { boneName, boneType, measurements } = req.body;
+    
+    // Step 1: Insert into bone table
+    const boneQuery = `
+      INSERT INTO bone (bone_type, bone_name) 
+      VALUES (?, ?)
+    `;
+    const [boneResult] = await db.promise().query(boneQuery, [boneType, boneName]);
+    const boneId = boneResult.insertId;
+    
+    // Step 2: Convert measurement names to database column names
+    const convertToColumnName = (measurementName) => {
+      // Remove everything in parentheses, slashes, and extra characters
+      let cleanName = measurementName
+        .replace(/\([^)]*\)/g, '') // Remove parentheses and content
+        .replace(/\//g, ' ')        // Replace slashes with spaces
+        .replace(/-/g, ' ')         // Replace hyphens with spaces
+        .trim()                     // Remove leading/trailing spaces
+        .toLowerCase()              // Convert to lowercase
+        .replace(/\s+/g, '_');      // Replace spaces with underscores
+      
+      // Add bone type prefix
+      return `${boneType}_${cleanName}`;
+    };
+    
+    // Step 3: Prepare the measurements insert
+    const columns = ['bone_id'];
+    const values = [boneId];
+    const placeholders = ['?'];
+    
+    // Add each measurement that has a value
+    Object.keys(measurements).forEach(key => {
+      if (measurements[key] !== '' && measurements[key] !== null && measurements[key] !== undefined) {
+        const columnName = convertToColumnName(key);
+        columns.push(`\`${columnName}\``);
+        values.push(parseFloat(measurements[key]));
+        placeholders.push('?');
+      }
+    });
+    
+    // Step 4: Insert into appendicular_measurements table
+    const measurementsQuery = `
+      INSERT INTO appendicular_measurements (${columns.join(', ')}) 
+      VALUES (${placeholders.join(', ')})
+    `;
+    
+    console.log('SQL Query:', measurementsQuery);
+    console.log('Values:', values);
+    
+    await db.promise().query(measurementsQuery, values);
+    
+    res.status(201).json({ 
+      success: true, 
+      message: 'Bone measurements saved successfully',
+      boneId: boneId
+    });
+    
+  } catch (error) {
+    console.error('Error saving bone data:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to save bone data',
+      error: error.message 
+    });
+  }
+});
+
 // Middleware to protect routes
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
