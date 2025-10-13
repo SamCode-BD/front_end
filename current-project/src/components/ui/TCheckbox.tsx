@@ -1,8 +1,15 @@
+type TCheckboxProps = {
+  name: string;
+  checked?: boolean;
+  onChange: (checked: boolean) => void;
+};
 
-function TCheckbox(props) {
+function TCheckbox({name, checked, onChange} : TCheckboxProps) {
     return(<div className="flex gap-2">
-        <input type="checkbox"/>
-        <label>{props.name}</label>
+        <input type="checkbox" 
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}/>
+        <label>{name}</label>
     </div>)
 }
 export default TCheckbox

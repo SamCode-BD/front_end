@@ -16,8 +16,8 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 
-function Left() {
 
+function Left() {
     return(
         <div className = "flex-col h-screen overflow-y-scroll">
 
@@ -47,7 +47,7 @@ function Left() {
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
-                        <LocField/>
+                        <LocField />
                     </DialogContent>
                 </Dialog>
 
@@ -75,9 +75,6 @@ function Left() {
                     size="lg"
                     className="bg-maroon hover:bg-maroon/90 text-white hover:text-white 
                     h-16 w-full text-base sm:text-lg md:text-xl font-medium transition-all duration-200"
-                    //onClick={onSave}
-                    //disabled={isSaving}
-                    // {isSaving ? 'Saving...' : 'Save'}
                 >
                    
                 </Button>

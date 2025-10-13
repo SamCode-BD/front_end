@@ -1,19 +1,22 @@
 import { Button } from "@/components/ui/button"
 import "@/app/globals.css"
 import { Input } from "@/components/ui/input"
+import { Select } from "@radix-ui/themes"
+import { useEditBoneAPI } from "./EditBoneAPIContext"
+
 
 function Field() {
     
-
+    const {api, updateField} = useEditBoneAPI();
+    console.log(api);
     return (
         <div className = "flex flex-col ml-5 space-y-5 m-auto">
             
             <div className="flex items-center justify-between space-x-2">
-                <p>ID: </p>
+                <p>Specimen Number: </p>
                 <Input 
                     className="h-[40px] w-2/3 max-w-sm bg-white"
-                    //value={formData.id}
-                    //onChange={(e) => handleChange('id', e.target.value)}
+                    onChange={(e) => updateField("specimen","specimen_number", Number(e.target.value))}
                 />
             </div>
 
@@ -21,27 +24,29 @@ function Field() {
                 <p>Museum: </p>
                 <Input 
                     className="h-[40px] w-2/3 max-w-sm bg-white"
-                    //value={formData.museum}
-                    //onChange={(e) => handleChange('museum', e.target.value)}
+                     onChange={(e) => updateField("specimen", "museum_name", e.target.value)}
                 />
             </div>
 
             <div className="flex items-center justify-between space-x-2">
                 <p>Sex: </p>
-                <Input 
-                    className="h-[40px] w-2/3 max-w-sm bg-white"
-                    //value={formData.sex}
-                    //onChange={(e) => handleChange('sex', e.target.value)}
-                />
+                <Select.Root
+                value={api.specimen.sex}
+                onValueChange={(value) => updateField("specimen", "sex", value)}>
+                    <Select.Trigger/>
+                    <Select.Content>
+                        <Select.Item value="Male">Male</Select.Item>
+                        <Select.Item value="Female">Female</Select.Item>
+                        <Select.Item value="?Male">?Male</Select.Item>
+                        <Select.Item value="?Female">?Female</Select.Item>
+                        <Select.Item value="Unknown">Unknown</Select.Item>
+                    </Select.Content>
+                </Select.Root>
             </div>
 
             <div className="flex items-center justify-between space-x-2">
-                <p>User: </p>
-                <Input 
-                    className="h-[40px] w-2/3 max-w-sm bg-white"
-                    //value={formData.user}
-                    //onChange={(e) => handleChange('user', e.target.value)}
-                />
+                <p>User: {api.user.user_name}</p>
+
             </div>
         </div>
     )   

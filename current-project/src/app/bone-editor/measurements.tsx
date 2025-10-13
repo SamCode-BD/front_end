@@ -3,25 +3,26 @@ import MeasurementsBox from "@/components/ui/measurements_box"
 import { Vertebrae } from "./vertebrae"
 import Skull from "./skull"
 import React, {useState, useEffect} from 'react';
+import { useEditBoneAPI } from "./EditBoneAPIContext"
 
 function Measurements( {selectedBone} ){
+    const {api, updateField} = useEditBoneAPI();
+    console.log(api)
 
-    let [boneID, setBoneID] = useState("fallback");
-    const [measurements, setMeasurements] = useState({});
-    const [isSaving, setIsSaving] = useState(false);
+    let [boneName, setboneName] = useState("fallback");
+    //const [measurements, setMeasurements] = useState({});
+    //const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         const normalized = normalizeBone(selectedBone);
         if (postcranialmetrics_list.hasOwnProperty(normalized)) {
-            setBoneID(normalized);
+            setboneName(normalized);
         } else if (selectedBone === "Skull") {
-            setBoneID("skull");
+            setboneName("skull");
         } else {
             console.warn(`Unknown bone type: ${selectedBone}`);
-            setBoneID("fallback");
+            setboneName("fallback");
         }
-        // Reset measurements when bone changes
-        setMeasurements({});
     }, [selectedBone]);
 
     const normalizeBone = (boneName) => {
@@ -30,12 +31,16 @@ function Measurements( {selectedBone} ){
 
     // Handle measurement changes
     const handleMeasurementChange = (name, value) => {
+        console.log("value: " + value);
+        updateField("measurements", {metric_name:  name, metric_value: value}, "metric_name");
+        /*
         setMeasurements(prev => ({
             ...prev,
             [name]: value
         }));
+        */
     };
-
+    /*
     // Save measurements to database (only for appendicular bones)
     const handleSave = async (e) => {
         e.preventDefault();
@@ -49,7 +54,7 @@ function Measurements( {selectedBone} ){
                 },
                 body: JSON.stringify({
                     boneName: selectedBone,
-                    boneType: boneID,
+                    boneType: boneName,
                     measurements: measurements
                 })
             });
@@ -70,40 +75,43 @@ function Measurements( {selectedBone} ){
             setIsSaving(false);
         }
     };
+    */
 
     const renderContent = () => {
         // Check if it's a vertebrae type
-        if (boneID === "cervical_vertebrae") {
-            return <div><Vertebrae selectedList={boneID}></Vertebrae></div>;
-        } else if (boneID === "thoracic_vertebrae") {
-            return <div><Vertebrae selectedList={boneID}></Vertebrae></div>;
-        } else if (boneID === "lumbar_vertebrae") {
-            return <div><Vertebrae selectedList={boneID}></Vertebrae></div>;
-        } else if (boneID === "skull") {
+        if (boneName === "cervical_vertebrae") {
+            return <div><Vertebrae selectedList={boneName}></Vertebrae></div>;
+        } else if (boneName === "thoracic_vertebrae") {
+            return <div><Vertebrae selectedList={boneName}></Vertebrae></div>;
+        } else if (boneName === "lumbar_vertebrae") {
+            return <div><Vertebrae selectedList={boneName}></Vertebrae></div>;
+        } else if (boneName === "skull") {
             return <div><Skull></Skull></div>;
         }
-        // Otherwise render appendicular bones
         else {
-            return postcranialmetrics_list[boneID].map((name, i) => (
+            return postcranialmetrics_list[boneName].map((name, i) => (
                 <MeasurementsBox 
                     name={name} 
                     key={i}
-                    value={measurements[name] || ''}
-                    onChange={(value) => handleMeasurementChange(name, value)}
+                    value= {api.measurements.find((m) => m.metric_name === name)?.metric_value ?? ''}
+                    onChange={(e) => handleMeasurementChange(name, e.target.value)}
                 />
             ));
         }
     };
 
     // Only show save button for appendicular bones
-    const showSaveButton = !["cervical_vertebrae", "thoracic_vertebrae", "lumbar_vertebrae", "skull"].includes(boneID);
+    //const showSaveButton = !["cervical_vertebrae", "thoracic_vertebrae", "lumbar_vertebrae", "skull"].includes(boneName);
 
     return(
         <div>
+            {renderContent()}
+            {/*
             <form onSubmit={handleSave}>
                 <section>
                     {renderContent()}
                 </section>
+                
                 {showSaveButton && (
                     <button 
                         type="submit" 
@@ -113,7 +121,9 @@ function Measurements( {selectedBone} ){
                         {isSaving ? 'Saving...' : 'Save Measurements'}
                     </button>
                 )}
+                    
             </form>
+            */}
         </div>
     )
 } 

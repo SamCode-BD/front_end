@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/tabs"
 import Measurements from "./measurements"
 import { Button } from "@/components/ui/button"
-import Taphonomy from "@/components/editor/Taphonomy"
- 
+import Taphonomy from "./Taphonomy"
+
 function InnerRight() {
 
     const searchParams = useSearchParams();
@@ -49,7 +49,7 @@ function Right() {
   return (
     <div className="flex flex-col h-screen col-span-2 lg:col-span-4 space-y-4 bg-gray-100/10">
       <Suspense fallback={<div>Loading search params...</div>}>
-        <InnerRight />
+        <InnerRight/>
       </Suspense>
     </div>
   );
