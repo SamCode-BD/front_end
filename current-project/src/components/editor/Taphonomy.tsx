@@ -19,21 +19,21 @@ function Taphonomy(props) {
         if(activeSubmenu == "staining") {
             return <div>
                 <div className="p-2.5 flex flex-col justify-start items-start">
-                {taphonomy_options.staining.map((name, i) => <TCheckbox name={name} key={i}/>)}
+                {taphonomy_options.staining.map((name, i) => <TCheckbox name={name} key={i} onChange={() => {}}/>)}
                 </div>
             </div>
         }
         if(activeSubmenu == "surface damage") {
             return <div>
                 <div className="p-2.5 flex flex-col justify-start items-start">
-                {taphonomy_options.surface_damage.map((name, i) => <TCheckbox name={name} key={i}/>)}
+                {taphonomy_options.surface_damage.map((name, i) => <TCheckbox name={name} key={i} onChange={() => {}}/>)}
                 </div>
             </div>
         }
         if(activeSubmenu == "adherent materials") {
             return (<div>
                 <div className="p-2.5 flex flex-col justify-start items-start">
-                {taphonomy_options.adherent_materials.map((name, i) => <TCheckbox name={name} key={i}/>)}
+                {taphonomy_options.adherent_materials.map((name, i) => <TCheckbox name={name} key={i} onChange={() => {}}/>)}
                 </div>
             </div>)
         }
@@ -42,12 +42,12 @@ function Taphonomy(props) {
                 <div className="flex flex-col justify-center gap-10">
                     <div className="p-2.5 flex flex-col justify-start items-start">
                         <h3 className="break-words leading-normal">Curation Modifications</h3>
-                        {taphonomy_options.curation_modifications.map((name, i) => <TCheckbox name={name} key={i}/>)}
+                        {taphonomy_options.curation_modifications.map((name, i) => <TCheckbox name={name} key={i} onChange={() => {}}/>)}
                     </div>
                     
                     <div className="p-2.5 flex flex-col justify-start items-start">
                         <h3 className="break-words leading-normal" >Cultural Modifications</h3>
-                        {taphonomy_options.cultural_modifications.map((name, i) => <TCheckbox name={name} key={i}/>)}
+                        {taphonomy_options.cultural_modifications.map((name, i) => <TCheckbox name={name} key={i} onChange={() => {}}/>)}
                     </div>
                 </div>
             </div>)
