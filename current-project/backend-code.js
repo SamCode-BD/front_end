@@ -1,17 +1,29 @@
-require('dotenv').config({ path: '.env.development' });
-const { applyRateLimit } = require('./src/lib/rateLimiter.js');
-const { captchaHandler } = require('./src/lib/captchaHandler.js');
+/*
+const envFile = process.env.NODE_ENV === 'production'
+  ? '.env.production'
+  : '.env.development';
+  */
 
-const { sendVerificationEmail } = require('./src/lib/emailVerificationHandler.js');
+require('dotenv').config({path: ".env.production"});
+
+
+//const {Resend} = require('resend');
+//const resend = new Resend(process.env.RESEND_API_KEY);
 
 const express = require('express');
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const {RateLimiterMemory} = require('rate-limiter-flexible');
+
+const rateLimiter = new RateLimiterMemory({
+  points: 60,       // 60 requests
+  duration: 60,    // per 60 seconds
+});
 
 const app = express();
-const port = 3001;
+const port = 7286;
 
 // Use environment variable for SECRET_KEY
 const SECRET_KEY = process.env.JWT_SECRET || 'SecretKey';
@@ -26,7 +38,8 @@ const db = mysql.createConnection({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE
-  });
+});
+
   
 
 db.connect(err => {
@@ -35,6 +48,14 @@ db.connect(err => {
     return;
   }
   console.log('Connected to MySQL database');
+});
+
+db.on('error', (err) => {
+  console.error('MySQL error', err);
+  if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+    console.error('Database connection lost — exiting...');
+    process.exit(1); // PM2 will auto-restart it
+  }
 });
 
 // -------------------- AUTH ROUTES --------------------
@@ -54,26 +75,32 @@ app.post('/api/register', async (req, res) => {
 
     db.query(
       //'INSERT INTO user (name, email, password, roles, isVerified VALUES (?, ?, ?, ?, FALSE)',
-      'INSERT INTO user (name, email, password, roles, isVerified VALUES (?, ?, ?, ?, TRUE)',
+      'INSERT INTO user (name, email, password, roles, isVerified) VALUES (?, ?, ?, ?, TRUE)',
       [name, email, hashed, roles || 'user'],
       async (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
 
         const newUser = { id: result.insertId, email };
-        try {
-          await sendVerificationEmail(newUser);
 
-          return res.status(201).json({
-            message: 'Account created. Please check your email to verify your account.',
+        return res.status(201).json({
+            message: 'Account created.', //no message for verifying email because we're not doing that
             id: result.insertId,
             name,
             email,
             roles,
           });
+
+          
+        /*
+        try {
+          await sendVerificationEmail(newUser);
+
+          
         } catch (emailErr) {
           console.error('Email send error:', emailErr);
           return res.status(500).json({ error: 'Account created, but failed to send verification email.' });
         }
+          */
       }
     );
   } catch (err) {
@@ -81,6 +108,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
+/*
 app.get('/api/verify-email', async (req, res) => {
   const { token } = req.query;
 
@@ -102,6 +130,7 @@ app.get('/api/verify-email', async (req, res) => {
     res.status(400).send('Invalid or expired token');
   }
 });
+*/
 
 // Login user
 app.post('/api/login', async (req, res) => {
@@ -112,7 +141,7 @@ app.post('/api/login', async (req, res) => {
     if (!rows.length) return res.status(401).json({ error: 'Invalid email' });
     
     const user = rows[0];
-    if (!user.isVerified) return res.status(401).json({ error: 'Please verify your email first.' });
+    //if (!user.isVerified) return res.status(401).json({ error: 'Please verify your email first.' });
 
   
     const match = await bcrypt.compare(password, user.password);
@@ -209,6 +238,65 @@ function authenticateToken(req, res, next) {
     next();
   });
 }
+
+async function captchaHandler(req, res) {
+    //Captcha ----------------------------------------------
+        const secretKey = process.env.REACT_CAPTCHA_SECRET_KEY;
+    
+        const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captchaToken}`;
+        const captchaResponse = await fetch(verifyUrl, { method: 'POST' });
+        const captchaData = await captchaResponse.json();
+    
+        if (!captchaData.success) {
+
+          res.status(400).json({ message: 'CAPTCHA verification failed' });
+          console.log(captchaData);
+          throw new Error("Captcha failed");
+          
+        }
+        //-----------------------------------------------------
+}
+
+async function applyRateLimit(req, res) {
+  const ip = String((req.headers['x-forwarded-for'] || req.socket.remoteAddress || ''));
+
+  try {
+    await rateLimiter.consume(ip);
+  } catch (rateLimiterRes) {
+    res.status(429).json({ message: 'Too many requests, please try again later.' });
+    throw new Error('Rate limit exceeded');
+  }
+}
+
+/*
+async function sendVerificationEmail(user) {
+  const token = jwt.sign(
+    { email: user.email, id: user.id },
+    process.env.EMAIL_JWT_SECRET,
+    { expiresIn: '1d' }
+  );
+
+  const verifyUrl = `http://localhost:3001/api/verify-email?token=${token}`;
+
+  const {data, error} = await resend.emails.send({
+    from: process.env.EMAIL_FROM,
+    to: user.email,
+    subject: 'Verify your email',
+    html: `
+      <p>Hello!</p>
+      <p>Click the link below to verify your email:</p>
+      <a href="${verifyUrl}">${verifyUrl}</a>
+      <p>This link expires in 24 hours.</p>
+    `,
+    
+  });
+
+  if (error) {
+    res.status(500).json({ error: 'Account created, but failed to send verification email.' });
+    throw new Error(`Failed to send verification email: ${error.message}`);
+  }
+}
+  */
 
 // -------------------- GENERIC CRUD --------------------
 function makeCrudRoutes(table, pk, allowedFields) {

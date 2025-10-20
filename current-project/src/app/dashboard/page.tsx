@@ -8,13 +8,13 @@ import { useRouter } from 'next/navigation'
 export default function DemoPage() {
 
 const router = useRouter();
-  useEffect(() => {
-    
-    const token = localStorage.getItem('authToken')
-    //if (!token) {
-    //  router.push('/login')
-    //}
-  }, [])
+useEffect(() => {
+  
+  const token = localStorage.getItem('authToken')
+  //if (!token) {
+  //  router.push('/login')
+  //}
+}, [])
 
   return (
     <div>

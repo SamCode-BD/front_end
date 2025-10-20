@@ -81,6 +81,6 @@ function Left() {
             </div>
         </div>
     );
-} 
+}
 
 export default Left

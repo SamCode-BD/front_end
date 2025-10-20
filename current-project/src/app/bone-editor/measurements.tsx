@@ -31,7 +31,7 @@ function Measurements( {selectedBone} ){
 
     // Handle measurement changes
     const handleMeasurementChange = (name, value) => {
-        console.log("value: " + value);
+        //console.log("value: " + value);
         updateField("measurements", {metric_name:  name, metric_value: value}, "metric_name");
         /*
         setMeasurements(prev => ({
