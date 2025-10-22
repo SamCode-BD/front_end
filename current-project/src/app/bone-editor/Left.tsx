@@ -5,6 +5,7 @@ import "@/app/globals.css"
 import Field from "./fields"
 import TaxField from "./taxfields"
 import LocField from "./locfields"
+import { useBoneData } from "./context/BoneDataContext"
 
 import {
     Dialog,
@@ -16,8 +17,9 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 
-
 function Left() {
+    const { handleSave, isSaving } = useBoneData();
+
     return(
         <div className = "flex-col h-screen overflow-y-scroll">
 
@@ -47,7 +49,7 @@ function Left() {
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
-                        <LocField />
+                        <LocField/>
                     </DialogContent>
                 </Dialog>
 
@@ -75,12 +77,23 @@ function Left() {
                     size="lg"
                     className="bg-maroon hover:bg-maroon/90 text-white hover:text-white 
                     h-16 w-full text-base sm:text-lg md:text-xl font-medium transition-all duration-200"
+                    onClick={() => {
+                        alert('Button clicked!'); // Does this show?
+                        console.log('Button clicked!');
+                        console.log('handleSave exists?', typeof handleSave);
+                        if (handleSave) {
+                            handleSave();
+                        } else {
+                            console.error('handleSave is undefined!');
+                        }
+                    }}
+                    disabled={isSaving}
                 >
-                   
+                    {isSaving ? 'Saving...' : 'Save'}
                 </Button>
             </div>
         </div>
     );
-}
+} 
 
 export default Left
