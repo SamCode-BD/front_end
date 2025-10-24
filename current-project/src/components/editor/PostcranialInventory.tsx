@@ -11,7 +11,7 @@ import type { PostcranialCategory, PostcranialRow, InputRange } from "./postcran
 import { postcranial_inventory_list } from "./postcranial-inventory-list";
 import {BoxTypeEnum} from "./postcranial-inventory-list"
 import "./InventoryStyles.css"
-import Taphonomy from "./Taphonomy"
+import Taphonomy from "@/components/editor/Taphonomy"
 
 type PostcranialType = {
     name: string

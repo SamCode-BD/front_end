@@ -4,9 +4,9 @@ import {useState} from 'react'
 
 import { Button } from "@/components/ui/button"
 import "@/app/globals.css"
-import Specimen from "../../components/editor/skeleton-editor/Specimen"
-import Locality from "../../components/editor/skeleton-editor/Locality"
-import Taxonomy from "../../components/editor/skeleton-editor/Taxonomy"
+import Field from "./fields"
+import TaxField from "./taxfields"
+import LocField from "./locfields"
 
 import {
     Dialog,
@@ -40,7 +40,7 @@ function Left() {
         </div>
 
         <div className="w-[90%] py-20">
-            <Specimen/>
+            <Field/>
         </div>
         
 
@@ -58,7 +58,7 @@ function Left() {
                 </DialogTrigger>
                 <DialogContent>
 
-                    <Taxonomy/>
+                    <LocField/>
 
                 </DialogContent>
 
@@ -77,7 +77,7 @@ function Left() {
                 </DialogTrigger>
                 <DialogContent>
 
-                    <Locality/>
+                    <TaxField/>
                     
                 </DialogContent>
 

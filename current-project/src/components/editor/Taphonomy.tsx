@@ -1,6 +1,6 @@
 import TCheckbox from "@/components/ui/TCheckbox";
 import React, {useState, useContext} from 'react';
-import {taphonomy_options} from "@/components/editor/taphonomy-options-list";
+import {taphonomy_options} from "./taphonomy-options-list";
 import HorizontalRadioButton from "@/components/ui/HorizontalRadioButton";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
