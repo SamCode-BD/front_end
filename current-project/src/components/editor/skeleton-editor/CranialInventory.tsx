@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Table, TextField } from "@radix-ui/themes";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import { cranial_inventory_list } from "./cranial-inventory-list";
-import Taphonomy from "@/components/editor/Taphonomy"
+import Taphonomy from "./Taphonomy"
 import "./InventoryStyles.css"
 
 export default function CranialInventory() {

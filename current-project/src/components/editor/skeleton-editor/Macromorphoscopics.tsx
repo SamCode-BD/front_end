@@ -1,5 +1,5 @@
 "use client"
-import {mms_list} from "@/components/editor/mms-list"
+import {mms_list} from "@/components/editor/skeleton-editor/mms-list"
 import { RadioGroup, TextArea } from "@radix-ui/themes"
 import {useState} from 'react'
 
