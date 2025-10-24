@@ -6,16 +6,14 @@ import {
     TabsList,
     TabsTrigger,
   } from "@/components/ui/tabs"
-  import Measurements from "@/components/editor/measurements"
   import { Button } from "@/components/ui/button"
-  import Taphonomy from "@/components/editor/Taphonomy"
-  import Craniometrics from "@/components/editor/Craniometrics"
-  import PostcranialMetrics from '@/components/editor/PostcranialMetrics';
-  import CranialNonmetrics from "@/components/editor/CranialNonmetrics"
-import CranialInventory from '@/components/editor/CranialInventory';
-import PostcranialInventory from '@/components/editor/PostcranialInventory';
-import PermanentInventory from '@/components/editor/PermanentInventory';
-import DeciduousInventory from '@/components/editor/DeciduousInventory';
+  import Craniometrics from "@/components/editor/skeleton-editor/Craniometrics"
+  import PostcranialMetrics from '@/components/editor/skeleton-editor/PostcranialMetrics';
+  import CranialNonmetrics from "@/components/editor/skeleton-editor/CranialNonmetrics"
+import CranialInventory from '@/components/editor/skeleton-editor/CranialInventory';
+import PostcranialInventory from '@/components/editor/skeleton-editor/PostcranialInventory';
+import PermanentInventory from '@/components/editor/skeleton-editor/PermanentInventory';
+import DeciduousInventory from '@/components/editor/skeleton-editor/DeciduousInventory';
  
 function Right() {
     

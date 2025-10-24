@@ -1,4 +1,4 @@
-import {mms_img} from "@/components/editor/mms-img"
+import {mms_img} from "@/components/editor/skeleton-editor/mms-img"
 export const mms_list = {
     dict: {
         "Anterior Nasal Spine":[0, [1, 2, 3], mms_img.ans],

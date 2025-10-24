@@ -1,3 +1,4 @@
+
 import {
     Tabs,
     TabsContent,
@@ -7,15 +8,16 @@ import {
 
 import {Table, Select} from '@radix-ui/themes'
 
-import { cranial_nonmetrics_list } from "@/components/editor/cranial-nonmetrics-list"
-import type { CranialNonmetricRow } from "@/components/editor/cranial-nonmetrics-list"
-import Macromorphoscopics from "@/components/editor/Macromorphoscopics"
+import { cranial_nonmetrics_list } from "@/components/editor/skeleton-editor/cranial-nonmetrics-list"
+import type { CranialNonmetricRow } from "@/components/editor/skeleton-editor/cranial-nonmetrics-list"
+import Macromorphoscopics from "@/components/editor/skeleton-editor/Macromorphoscopics"
 
 export default function CranialNonmetrics() {
 
     function renderTable(info: CranialNonmetricRow[]) {
         return (
             <Table.Root>
+            <Table.Body>
             {info.map((row, i) => (
                 <Table.Row key={i}>
                     <Table.RowHeaderCell>{row[0]}</Table.RowHeaderCell>
@@ -35,6 +37,7 @@ export default function CranialNonmetrics() {
                     </Table.Cell>
                 </Table.Row>
             ))}
+            </Table.Body>
         </Table.Root>
         )
     }
