@@ -2,6 +2,7 @@
 import {mms_list} from "@/components/editor/skeleton-editor/mms-list"
 import { RadioGroup, TextArea } from "@radix-ui/themes"
 import {useState} from 'react'
+import { useEditSkeletonAPI } from "@/app/skeleton-editor/EditSkeletonAPIContext"
 
 const getImage = (trait, code) => {
     console.log("trait: " + trait + " code: " + code);
@@ -14,15 +15,27 @@ const getImage = (trait, code) => {
 
 export default function Macromorphoscopics() {
 
+    const {api, updateField} = useEditSkeletonAPI();
+
     let [trait, selectTrait] = useState("Anterior Nasal Spine");
     let [code, selectCode] = useState(0);
 
-     const getRadioButtons = (codes) => {
+     const getRadioButtons = (trait) => {
+        const codes = mms_list.dict[trait][1]
         if(codes != null) {
             return(<RadioGroup.Root name="codeSelect"
-                onValueChange={(number) => selectCode(Number(number))}>
+                                    onValueChange={(number) => {
+                                        selectCode(Number(number)); 
+                                        updateField("cranial_nonmetrics", {
+                                            category: "macromorphoscopics",
+                                            value_str: codes[number],
+                                            nonmetric_name: trait
+                                        }, "nonmetric_name")}}
+                                    >
                     {codes.map((number, i) => 
-                <RadioGroup.Item key={i} value={i}>
+                <RadioGroup.Item key={i} value={i}
+                checked={api.cranial_nonmetrics.find((cn) =>
+                        (cn.category === "macromorphoscopics" && cn.nonmetric_name === trait && cn.value_str === number)) != null}>
                     {number}
                 </RadioGroup.Item>)}
             </RadioGroup.Root>)
@@ -61,7 +74,7 @@ export default function Macromorphoscopics() {
         <img className = "mt-[10px] min-w-[300px] max-w-[600px] min-h-[300px] max-h-[400px]" src={getImage(trait, code)}/>
         <div className="flex flex-row">
             <div className = "mt-[50px] mr-[50px] h-[50px] items-center justify-center">
-                {getRadioButtons(mms_list.dict[trait][1])}
+                {getRadioButtons(trait)}
             </div>
             <div className = "mt-[10px] w-[450px] h-[85px]">
                 <TextArea readOnly className="w-[500px] h-[200px]" value={mms_list.code_desc[mms_list.dict[trait][0]][code]}/>

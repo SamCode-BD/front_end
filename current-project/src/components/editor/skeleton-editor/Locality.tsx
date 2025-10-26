@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import "@/app/globals.css";
 import { Input } from "@/components/ui/input";
-// import { useEditSkeletonAPI } from "./EditSkeletonAPIContext";
+import { useEditSkeletonAPI } from "@/app/skeleton-editor/EditSkeletonAPIContext";
 
 function Locality() {
-    // const { api, updateField } = useEditSkeletonAPI();
+    const { api, updateField } = useEditSkeletonAPI();
 
     return (
         <div className="flex flex-col ml-5 space-y-5 m-auto">
@@ -13,8 +13,8 @@ function Locality() {
                 <p>Broad Region: </p>
                 <Input
                     className="h-[40px] w-2/3 max-w-sm bg-white"
-                    // value={api.locality.broad_region}
-                    // onChange={(e) => updateField("locality", "broad_region", e.target.value)}
+                    value={api.locality.broad_region}
+                    onChange={(e) => updateField("locality", "broad_region", e.target.value)}
                 ></Input>
             </div>
 
@@ -22,8 +22,8 @@ function Locality() {
                 <p>Country: </p>
                 <Input
                     className="h-[40px] w-2/3 max-w-sm bg-white"
-                    // value={api.locality.country}
-                    // onChange={(e) => updateField("locality", "country", e.target.value)}
+                    value={api.locality.country}
+                    onChange={(e) => updateField("locality", "country", e.target.value)}
                 ></Input>
             </div>
 
@@ -31,8 +31,8 @@ function Locality() {
                 <p>Locality: </p>
                 <Input
                     className="h-[40px] w-2/3 max-w-sm bg-white"
-                    // value={api.locality.locality}
-                    // onChange={(e) => updateField("locality", "locality", e.target.value)}
+                    value={api.locality.locality}
+                    onChange={(e) => updateField("locality", "locality", e.target.value)}
                 ></Input>
             </div>
 
@@ -40,8 +40,8 @@ function Locality() {
                 <p>Region: </p>
                 <Input
                     className="h-[40px] w-2/3 max-w-sm bg-white"
-                    // value={api.locality.region}
-                    // onChange={(e) => updateField("locality", "region", e.target.value)}
+                    value={api.locality.region}
+                    onChange={(e) => updateField("locality", "region", e.target.value)}
                 ></Input>
             </div>
         </div>

@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { Table, TextField } from "@radix-ui/themes";
 import * as Checkbox from "@radix-ui/react-checkbox";
-import { cranial_inventory_list } from "./cranial-inventory-list";
+import { cranial_inventory_list, CranialInventoryList, CranialInventoryRow } from "./cranial-inventory-list";
 import Taphonomy from "./Taphonomy"
 import "./InventoryStyles.css"
+import { useEditSkeletonAPI } from "@/app/skeleton-editor/EditSkeletonAPIContext";
 
 export default function CranialInventory() {
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
   const [selectedBone, setSelectedBone] = useState("")
+
+  const {api, updateField} = useEditSkeletonAPI();
 
   function getCheckboxLabels(numBoxes: number): string[] {
     if (numBoxes === 1) return [];
@@ -16,11 +19,20 @@ export default function CranialInventory() {
     return [];
   }
 
-  function createCheckboxes(numBoxes: number) {
+  function createCheckboxes(bone : CranialInventoryRow) {
+    const numBoxes : number = bone.numBoxes;
+    const labels = getCheckboxLabels(bone.numBoxes);
+    const entryName = (idx) => labels[idx] ? bone.boneName + " " + labels[idx] : bone.boneName;
+    const apiInstance = (idx) => api.cranial_inventory.find((inv) => inv.inv_entry_name === entryName(idx))
     return Array.from({ length: numBoxes }).map((_, idx) => (
       <Checkbox.Root
         key={idx}
         className="w-6 h-6 mx-2 border border-gray-400 rounded flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+        checked={apiInstance(idx)?.isChecked || false}
+        onCheckedChange={() => updateField("cranial_inventory", {
+          inv_entry_name: entryName(idx),
+          isChecked: apiInstance(idx) == undefined ? true : !apiInstance(idx)?.isChecked
+        }, "inv_entry_name")}
       >
         <Checkbox.Indicator>
           <svg
@@ -83,7 +95,7 @@ export default function CranialInventory() {
 
                         {/* Checkboxes row */}
                         <div className="flex justify-center gap-6 w-full ">
-                          {createCheckboxes(bone.numBoxes)}
+                          {createCheckboxes(bone)}
                         </div>
                       </div>
                     </Table.Cell>
@@ -91,7 +103,15 @@ export default function CranialInventory() {
                     <Table.Cell className="table-cell inventory">
                         <div className = "flex flex-col items-center gap-1">
                             <p>Enter number of teeth:</p>
-                            <TextField.Root className="w-20" type="number" />
+                            <TextField.Root className="w-20" type="number" 
+                            value={api.cranial_inventory.find((inv) => inv.inv_entry_name === "num_teeth")?.value || ''}
+                            onChange={(e) =>
+                            updateField("cranial_inventory", {
+                              inv_entry_name: "num_teeth",
+                              value: Number(e.target.value),
+                              isChecked: true
+                            },
+                              "inv_entry_name")}/>
                         </div>
                         
                     </Table.Cell>

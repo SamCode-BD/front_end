@@ -17,10 +17,12 @@ import {
     DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog"
+import { useEditSkeletonAPI } from './EditSkeletonAPIContext'
 
 function Left() {
 
     const [loading, setLoading] = useState(false);
+    const {api, handleSave} = useEditSkeletonAPI();
     const router = useRouter();
     if (loading) {
         return <div className="p-4">Loading...</div>;
@@ -87,6 +89,7 @@ function Left() {
 
         <div className = "flex w-full max-w-md mx-auto p-4">
             <Button
+            onClick={handleSave}
             variant="outline"
             size="lg"
             className="bg-maroon  hover:bg-maroon/90 text-white hover:text-white 

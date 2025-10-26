@@ -1,102 +1,75 @@
 "use client";
-//AI Slop code
-
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { produce } from "immer";
-import { EditSkeletonAPI } from "./skeleton-editor-types";
-import { DEFAULT_EDIT_SKELETON_API } from "./skeleton-editor-types";
+import { EditSkeletonAPI, DEFAULT_EDIT_SKELETON_API } from "./skeleton-editor-types";
+import { loadSkeletonData } from "./api/loadSkeleton";
+import { saveSkeletonData } from "./api/saveSkeleton";
+import { linkSpecimenToSkeleton } from "./api/linkSpecimenToSkeleton";
+import { saveCraniometrics } from "./api/saveCraniometrics";
 
-// --- Helper Types ---
-type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
-type ArraySections = {
-  [K in keyof EditSkeletonAPI]: EditSkeletonAPI[K] extends Array<any> ? K : never;
-}[keyof EditSkeletonAPI];
+const API_URL_ROOT = process.env.NEXT_PUBLIC_API_URL;
+const EditSkeletonAPIContext = createContext<any>(null);
 
-// --- Context Value Type ---
-type EditSkeletonAPIContextType = {
-  api: EditSkeletonAPI;
-  updateAPI: React.Dispatch<React.SetStateAction<EditSkeletonAPI>>;
-  updateField: {
-    // object overload
-    <T extends keyof EditSkeletonAPI>(
-      section: Exclude<T, ArraySections>,
-      field: keyof EditSkeletonAPI[T],
-      value: EditSkeletonAPI[T][typeof field]
-    ): void;
-    // array overload
-    <T extends ArraySections>(
-      section: T,
-      newItem: ArrayElement<EditSkeletonAPI[T]>,
-      matchKey: keyof ArrayElement<EditSkeletonAPI[T]>
-    ): void;
-  };
-};
-
-// --- Create Context ---
-const EditSkeletonAPIContext = createContext<EditSkeletonAPIContextType | null>(null);
-
-// --- Provider ---
-export const EditSkeletonAPIProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const EditSkeletonAPIProvider = ({ children }: { children: React.ReactNode }) => {
   const [api, setAPI] = useState<EditSkeletonAPI>(DEFAULT_EDIT_SKELETON_API);
 
-  // --- Unified Implementation ---
+  useEffect(() => {
+    loadSkeletonData(API_URL_ROOT!, setAPI);
+    
+  }, []);
+
+  //console.log(api);
+
+  async function handleSave() {
+    const result = await saveSkeletonData(API_URL_ROOT!, api);
+    //const result = await saveCraniometrics(API_URL_ROOT!, api);
+    alert(result.message);
+    //await linkSpecimenToSkeleton(API_URL_ROOT!, api);
+  }
+
   function updateField<T extends keyof EditSkeletonAPI>(
-  section: T,
-  fieldOrItem: keyof EditSkeletonAPI[T] | any,
-  valueOrKey?: any,
-  matchKey?: string
-) {
-  setAPI(prev =>
-    produce(prev, draft => {
-      const target = draft[section];
-
-      // ✅ CASE 1: Top-level array (like measurements)
-      if (Array.isArray(target)) {
-        const newItem = fieldOrItem;
-        const key = valueOrKey;
-
-        if (!key) {
-          console.error(
-            `updateField: matchKey is required for array section (${String(section)})`
-          );
+    section: T,
+    fieldOrItem: keyof EditSkeletonAPI[T] | any,
+    valueOrKey?: any,
+    matchKey?: string
+  ) {
+    //console.log(api);
+    setAPI(prev =>
+      produce(prev, draft => {
+        const target = draft[section];
+        if (Array.isArray(target)) {
+          const newItem = fieldOrItem;
+          const key = valueOrKey;
+          if (!key) return;
+          const index = target.findIndex((item: any) => item[key] === newItem[key]);
+          if (index !== -1) target[index] = newItem;
+          else target.push(newItem);
           return;
         }
 
-        const index = target.findIndex((item: any) => item[key] === newItem[key]);
-        if (index !== -1) target[index] = newItem;
-        else target.push(newItem);
-        return;
-      }
+        const field = fieldOrItem as keyof EditSkeletonAPI[T];
+        const value = valueOrKey;
+        const current = target[field];
 
-      // ✅ CASE 2: Nested array inside an object (like taphonomy.staining)
-      const field = fieldOrItem as keyof EditSkeletonAPI[T];
-      const value = valueOrKey;
-      const current = target[field];
+        if (Array.isArray(current)) {
+          const idx = current.indexOf(value);
+          if (idx === -1) current.push(value);
+          else current.splice(idx, 1);
+          return;
+        }
 
-      if (Array.isArray(current)) {
-        // toggle-like behavior: add if missing, remove if present
-        const idx = current.indexOf(value);
-        if (idx === -1) current.push(value);
-        else current.splice(idx, 1);
-        return;
-      }
-
-      // ✅ CASE 3: Normal object field (string, boolean, number, etc.)
-      (target as any)[field] = value;
-    })
-  );
-}
+        (target as any)[field] = value;
+      })
+    );
+  }
 
   return (
-    <EditSkeletonAPIContext.Provider value={{ api, updateAPI: setAPI, updateField }}>
+    <EditSkeletonAPIContext.Provider value={{ api, updateAPI: setAPI, updateField, handleSave}}>
       {children}
     </EditSkeletonAPIContext.Provider>
   );
 };
 
-// --- Hook for Consumers ---
 export function useEditSkeletonAPI() {
   const ctx = useContext(EditSkeletonAPIContext);
   if (!ctx)

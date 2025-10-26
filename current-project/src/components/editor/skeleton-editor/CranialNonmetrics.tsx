@@ -6,15 +6,21 @@ import {
     TabsTrigger,
   } from "@/components/ui/tabs"
 
+import React from 'react'
+
 import {Table, Select} from '@radix-ui/themes'
 
 import { cranial_nonmetrics_list } from "@/components/editor/skeleton-editor/cranial-nonmetrics-list"
 import type { CranialNonmetricRow } from "@/components/editor/skeleton-editor/cranial-nonmetrics-list"
 import Macromorphoscopics from "@/components/editor/skeleton-editor/Macromorphoscopics"
+import { useEditSkeletonAPI } from "@/app/skeleton-editor/EditSkeletonAPIContext"
 
-export default function CranialNonmetrics() {
+function CranialNonmetrics() {
 
-    function renderTable(info: CranialNonmetricRow[]) {
+    const {api, updateField} = useEditSkeletonAPI();
+
+    function renderTable(tab_str : string) {
+        const info: CranialNonmetricRow[] = cranial_nonmetrics_list[tab_str];
         return (
             <Table.Root>
             <Table.Body>
@@ -22,7 +28,14 @@ export default function CranialNonmetrics() {
                 <Table.Row key={i}>
                     <Table.RowHeaderCell>{row[0]}</Table.RowHeaderCell>
                     <Table.Cell>
-                        <Select.Root>
+                        <Select.Root
+                        value={api.cranial_nonmetrics.find((r) => r.nonmetric_name === row[0])?.value_str}
+                        onValueChange={(value) => {updateField("cranial_nonmetrics", {
+                            category: tab_str,
+                            nonmetric_name: row[0],
+                            value_str: value
+                        }, "nonmetric_name"
+                        )}}>
                             <Select.Trigger />
                             <Select.Content>
                                 {Array.isArray(row[1]) ? (
@@ -41,31 +54,25 @@ export default function CranialNonmetrics() {
         </Table.Root>
         )
     }
+    const tab_values = ["facial", "lateral", "basilar", "mandibular", "macromorphoscopics"];
+
     return(<div className = "bone-container">
                 <h3 className = "text-center">Cranial Nonmetrics</h3>
-                    <Tabs defaultValue = "Facial">
+                    <Tabs defaultValue = "facial">
                         <TabsList>
-                            <TabsTrigger value="Facial">Facial</TabsTrigger>
-                            <TabsTrigger value="Lateral">Lateral</TabsTrigger>
-                            <TabsTrigger value="Basilar">Basilar</TabsTrigger>
-                            <TabsTrigger value="Mandibular">Mandibular</TabsTrigger>
-                            <TabsTrigger value="Macromorphoscopics">Macromorphoscopics</TabsTrigger>
+                            {tab_values.map((tab, i) =>
+                            <TabsTrigger value={tab}>{tab.charAt(0).toUpperCase() + tab.slice(1)}</TabsTrigger>)}
                         </TabsList>
-                        <TabsContent value="Facial">
-                            {renderTable(cranial_nonmetrics_list.facial)}
-                        </TabsContent>
-                        <TabsContent value="Lateral">
-                            {renderTable(cranial_nonmetrics_list.lateral)}
-                        </TabsContent>
-                        <TabsContent value="Basilar">
-                            {renderTable(cranial_nonmetrics_list.basilar)}
-                        </TabsContent>
-                        <TabsContent value="Mandibular">
-                            {renderTable(cranial_nonmetrics_list.mandibular)}
-                        </TabsContent>
-                        <TabsContent value="Macromorphoscopics">
+                        {tab_values.map((tab, i) => tab != "macromorphoscopics" &&
+                            <TabsContent value={tab}>
+                                {renderTable(tab)}
+                            </TabsContent>
+                        )}
+                        <TabsContent value="macromorphoscopics">
                             <Macromorphoscopics/>
                         </TabsContent>
                     </Tabs>
             </div>)
 }
+
+export default CranialNonmetrics

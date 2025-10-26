@@ -2,7 +2,7 @@ export const postcranialmetrics_list = {
     clavicle: [ 
         "Maximum Length",
         "Anterior (Sagittal-Posterior) Diameter at Midshaft",
-        "Superior (Vertical-lnferior) Diameter at Midshaft",
+        "Superior (Vertical-Inferior) Diameter at Midshaft",
     ],
 
     scapula: [
