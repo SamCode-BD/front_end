@@ -1,6 +1,5 @@
 "use client"
 
-import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
 import {
@@ -11,12 +10,11 @@ import {
 } from "@/components/ui/tabs"
 import Measurements from "./measurements"
 import { Button } from "@/components/ui/button"
-import Taphonomy from "./Taphonomy"
-
+import Taphonomy from "@/components/editor/Taphonomy"
+import { useBoneData } from "./context/BoneDataContext"
+ 
 function InnerRight() {
-
-    const searchParams = useSearchParams();
-    const selectedBone = searchParams.get('boneName');
+    const { selectedBone } = useBoneData();
 
     return(
         <div className = "flex flex-col h-screen col-span-2 lg:col-span-4 space-y-4 bg-gray-100/10">
@@ -31,7 +29,7 @@ function InnerRight() {
                     </TabsList>
                     <TabsContent value="measurements">
                         <div className="bone-container">
-                            <Measurements selectedBone = {selectedBone} ></Measurements>
+                            <Measurements />
                         </div>
                     </TabsContent>
                     <TabsContent value="taphonomy">
@@ -41,7 +39,7 @@ function InnerRight() {
                     </TabsContent>
                 </Tabs>
             </div>
-        </div>  
+        </div>   
     );
 }
 
@@ -49,7 +47,7 @@ function Right() {
   return (
     <div className="flex flex-col h-screen col-span-2 lg:col-span-4 space-y-4 bg-gray-100/10">
       <Suspense fallback={<div>Loading search params...</div>}>
-        <InnerRight/>
+        <InnerRight />
       </Suspense>
     </div>
   );

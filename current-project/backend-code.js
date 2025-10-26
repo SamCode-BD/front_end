@@ -160,34 +160,77 @@ app.post('/api/login', async (req, res) => {
 
 
 // Save bone measurements (complex insert)
-app.post('/api/bones/measurements', async (req, res) => {
+app.post('/api/bones/complete', async (req, res) => {
   try {
-    const { boneName, boneType, measurements } = req.body;
+    const { specimenNumber, museumId, boneName, boneType, sex, user, measurements } = req.body;
     
-    // Step 1: Insert into bone table
+    console.log('Received data:', { specimenNumber, museumId, boneName, boneType, sex, user, measurements });
+    
+    // Step 1: Get museum abbreviation for specimen_name
+    const [museumResult] = await db.promise().query(
+      'SELECT museum_name FROM museum WHERE museum_id = ?',
+      [parseInt(museumId)]
+    );
+    
+    if (museumResult.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid museum ID'
+      });
+    }
+    
+    const museumAbbreviation = museumResult[0].museum_name; // e.g., "SUB"
+    const specimenName = `${museumAbbreviation}-${specimenNumber}`; // e.g., "SUB-45"
+    
+    // Step 2: Check if specimen exists
+    const checkSpecimenQuery = `SELECT specimen_id FROM specimen WHERE specimen_name = ?`;
+    const [existingSpecimen] = await db.promise().query(checkSpecimenQuery, [specimenName]);
+    
+    let specimenId;
+    
+    if (existingSpecimen.length === 0) {
+      // Create new specimen
+      // Note: user_id is left as NULL for now - you may want to handle this later
+      const specimenQuery = `
+        INSERT INTO specimen (specimen_name, specimen_number, museum_id, sex, user_id) 
+        VALUES (?, ?, ?, ?, NULL)
+      `;
+      const [specimenResult] = await db.promise().query(specimenQuery, [
+        specimenName,
+        parseInt(specimenNumber),
+        parseInt(museumId),
+        sex
+      ]);
+      specimenId = specimenResult.insertId;
+      console.log('Created new specimen:', specimenName, 'with ID:', specimenId);
+    } else {
+      specimenId = existingSpecimen[0].specimen_id;
+      console.log('Specimen already exists:', specimenName, 'with ID:', specimenId);
+    }
+    
+    // Step 3: Insert into bone table (bone_id auto-increments)
     const boneQuery = `
-      INSERT INTO bone (bone_type, bone_name) 
-      VALUES (?, ?)
+      INSERT INTO bone (bone_name, bone_type, specimen_id) 
+      VALUES (?, ?, ?)
     `;
-    const [boneResult] = await db.promise().query(boneQuery, [boneType, boneName]);
+    const [boneResult] = await db.promise().query(boneQuery, [boneName, boneType, specimenId]);
     const boneId = boneResult.insertId;
+    console.log('Inserted bone with auto-generated ID:', boneId);
     
-    // Step 2: Convert measurement names to database column names
+    // Step 4: Convert measurement names to database column names
     const convertToColumnName = (measurementName) => {
-      // Remove everything in parentheses, slashes, and extra characters
       let cleanName = measurementName
-        .replace(/\([^)]*\)/g, '') // Remove parentheses and content
-        .replace(/\//g, ' ')        // Replace slashes with spaces
-        .replace(/-/g, ' ')         // Replace hyphens with spaces
-        .trim()                     // Remove leading/trailing spaces
-        .toLowerCase()              // Convert to lowercase
-        .replace(/\s+/g, '_');      // Replace spaces with underscores
+        .replace(/\([^)]*\)/g, '')
+        .replace(/\//g, ' ')
+        .replace(/-/g, ' ')
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, '_');
       
-      // Add bone type prefix
       return `${boneType}_${cleanName}`;
     };
     
-    // Step 3: Prepare the measurements insert
+    // Step 5: Prepare the measurements insert
     const columns = ['bone_id'];
     const values = [boneId];
     const placeholders = ['?'];
@@ -202,21 +245,23 @@ app.post('/api/bones/measurements', async (req, res) => {
       }
     });
     
-    // Step 4: Insert into appendicular_measurements table
+    // Step 6: Insert into appendicular_measurements table
     const measurementsQuery = `
       INSERT INTO appendicular_measurements (${columns.join(', ')}) 
       VALUES (${placeholders.join(', ')})
     `;
     
-    console.log('SQL Query:', measurementsQuery);
+    console.log('Measurements SQL Query:', measurementsQuery);
     console.log('Values:', values);
     
     await db.promise().query(measurementsQuery, values);
     
     res.status(201).json({ 
       success: true, 
-      message: 'Bone measurements saved successfully',
-      boneId: boneId
+      message: 'All data saved successfully',
+      boneId: boneId,
+      specimenId: specimenId,
+      specimenName: specimenName
     });
     
   } catch (error) {

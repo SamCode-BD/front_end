@@ -1,54 +1,80 @@
 import { Button } from "@/components/ui/button"
 import "@/app/globals.css"
 import { Input } from "@/components/ui/input"
-import { Select } from "@radix-ui/themes"
-import { useEditBoneAPI } from "./EditBoneAPIContext"
-
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { useBoneData } from "./context/BoneDataContext"
 
 function Field() {
+    const { formData, setFormData } = useBoneData();
     
-    const {api, updateField} = useEditBoneAPI();
-    console.log(api);
+    const handleChange = (field: string, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
     return (
         <div className = "flex flex-col ml-5 space-y-5 m-auto">
             
             <div className="flex items-center justify-between space-x-2">
-                <p>Specimen Number: </p>
+                <p>Specimen #: </p>
                 <Input 
-                    value={api.specimen.specimen_number}
                     className="h-[40px] w-2/3 max-w-sm bg-white"
-                    onChange={(e) => updateField("specimen","specimen_number", Number(e.target.value))}
+                    type="number"
+                    value={formData.specimenNumber}
+                    onChange={(e) => handleChange('specimenNumber', e.target.value)}
+                    placeholder="Enter specimen number"
                 />
             </div>
 
             <div className="flex items-center justify-between space-x-2">
                 <p>Museum: </p>
-                <Input 
-                    value={api.specimen.museum_name}
-                    className="h-[40px] w-2/3 max-w-sm bg-white"
-                     onChange={(e) => updateField("specimen", "museum_name", e.target.value)}
-                />
+                <Select 
+                    value={formData.museumId} 
+                    onValueChange={(value) => handleChange('museumId', value)}
+                >
+                    <SelectTrigger className="h-[40px] w-2/3 max-w-sm bg-white">
+                        <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1">SUB</SelectItem>
+                        {/* Add more museums here as needed */}
+                    </SelectContent>
+                </Select>
             </div>
 
             <div className="flex items-center justify-between space-x-2">
                 <p>Sex: </p>
-                <Select.Root
-                value={api.specimen.sex}
-                onValueChange={(value) => updateField("specimen", "sex", value)}>
-                    <Select.Trigger/>
-                    <Select.Content>
-                        <Select.Item value="Male">Male</Select.Item>
-                        <Select.Item value="Female">Female</Select.Item>
-                        <Select.Item value="?Male">?Male</Select.Item>
-                        <Select.Item value="?Female">?Female</Select.Item>
-                        <Select.Item value="Unknown">Unknown</Select.Item>
-                    </Select.Content>
-                </Select.Root>
+                <Select 
+                    value={formData.sex} 
+                    onValueChange={(value) => handleChange('sex', value)}
+                >
+                    <SelectTrigger className="h-[40px] w-2/3 max-w-sm bg-white">
+                        <SelectValue placeholder="Select sex" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                        <SelectItem value="unknown">Unknown</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
 
             <div className="flex items-center justify-between space-x-2">
-                <p>User: {api.user.user_name}</p>
-
+                <p>User: </p>
+                <Input 
+                    className="h-[40px] w-2/3 max-w-sm bg-white"
+                    value={formData.user}
+                    onChange={(e) => handleChange('user', e.target.value)}
+                    placeholder="Enter user"
+                />
             </div>
         </div>
     )   
