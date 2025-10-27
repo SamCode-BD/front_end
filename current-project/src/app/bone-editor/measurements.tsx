@@ -51,7 +51,7 @@ function Measurements() {
                     name={name} 
                     key={i}
                     value={measurements[name] || ''}
-                    onChange={(value) => handleMeasurementChange(name, value)}
+                    onChange={(e) => handleMeasurementChange(name, e.target.value)}
                 />
             ));
         }
