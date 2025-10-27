@@ -27,17 +27,17 @@ export function ConfirmDialog({
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="fixed inset-0 bg-black/40 z-50" />
         <AlertDialog.Content className="fixed top-1/2 left-1/2 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg z-50 focus:outline-none">
-          <h3 className="text-base font-semibold text-gray-900">
+          <AlertDialog.Title className="text-base font-semibold text-gray-900">
             {title}
-          </h3>
-          <AlertDialog.Description className="mt-2 text-sm text-gray-600">
+          </AlertDialog.Title>
+          <AlertDialog.Description className="mt-2 text-xl font-semibold text-gray-600">
             {description}
           </AlertDialog.Description>
           <div className="mt-4 flex justify-end gap-4">
             <AlertDialog.Cancel asChild>
               <button
                 onClick={onCancel}
-                className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300"
+                className="px-4 py-2 rounded-xl bg-gray-200 text-gray-800 hover:bg-gray-300"
               >
                 {cancelText}
               </button>
@@ -46,7 +46,7 @@ export function ConfirmDialog({
             <AlertDialog.Action asChild>
               <button
                 onClick={onConfirm}
-                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+                className="px-4 py-2 rounded-xl bg-maroon text-white hover:bg-maroon2"
               >
                 {confirmText}
               </button>

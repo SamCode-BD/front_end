@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/tabs"
 import Measurements from "./measurements"
 import { Button } from "@/components/ui/button"
-import Taphonomy from "@/components/editor/Taphonomy"
+import Taphonomy from "./Taphonomy"
 import { useBoneData } from "./context/BoneDataContext"
  
 function InnerRight() {
