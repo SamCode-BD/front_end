@@ -1,18 +1,27 @@
 "use client"
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 interface FormData {
-    specimenNumber: string;  // Changed from boneId
-    museumId: string;        // Store museum_id instead of museum name
+    specimenNumber: string;
+    museumId: string;
     sex: string;
     user: string;
+}
+
+interface LocalityData {
+    broadRegion: string;
+    country: string;
+    locality: string;
+    region: string;
 }
 
 interface BoneDataContextType {
     formData: FormData;
     setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+    localityData: LocalityData;
+    setLocalityData: React.Dispatch<React.SetStateAction<LocalityData>>;
     measurements: Record<string, any>;
     setMeasurements: React.Dispatch<React.SetStateAction<Record<string, any>>>;
     selectedBone: string | null;
@@ -34,13 +43,41 @@ export function BoneDataProvider({ children }: { children: ReactNode }) {
         sex: 'unknown',
         user: ''
     });
+
+    const [localityData, setLocalityData] = useState<LocalityData>({
+        broadRegion: '',
+        country: '',
+        locality: '',
+        region: ''
+    });
     
     const [measurements, setMeasurements] = useState<Record<string, any>>({});
     const [isSaving, setIsSaving] = useState(false);
 
+    // Auto-fill locality based on museum selection
+    useEffect(() => {
+        if (formData.museumId === '1') { // SUB museum
+            setLocalityData({
+                broadRegion: 'East Coast',
+                country: 'United States',
+                locality: 'Salisbury',
+                region: 'MD'
+            });
+        } else {
+            // Reset if different museum selected
+            setLocalityData({
+                broadRegion: '',
+                country: '',
+                locality: '',
+                region: ''
+            });
+        }
+    }, [formData.museumId]);
+
     const handleSave = async () => {
         console.log('handleSave called!');
         console.log('formData:', formData);
+        console.log('localityData:', localityData);
         console.log('measurements:', measurements);
         console.log('selectedBone:', selectedBone);
         console.log('boneType:', boneType);
@@ -71,6 +108,7 @@ export function BoneDataProvider({ children }: { children: ReactNode }) {
                     boneType: boneType,
                     sex: formData.sex,
                     user: formData.user,
+                    localityData: localityData,
                     measurements: measurements
                 })
             });
@@ -98,7 +136,9 @@ export function BoneDataProvider({ children }: { children: ReactNode }) {
         <BoneDataContext.Provider 
             value={{ 
                 formData, 
-                setFormData, 
+                setFormData,
+                localityData,
+                setLocalityData,
                 measurements, 
                 setMeasurements,
                 selectedBone,

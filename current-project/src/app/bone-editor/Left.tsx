@@ -49,7 +49,10 @@ function Left() {
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
-                        <LocField/>
+                        <DialogHeader>
+                            <DialogTitle>Taxonomy Information</DialogTitle>
+                        </DialogHeader>
+                        <TaxField/>
                     </DialogContent>
                 </Dialog>
 
@@ -65,7 +68,10 @@ function Left() {
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
-                        <TaxField/>
+                        <DialogHeader>
+                            <DialogTitle>Locality Information</DialogTitle>
+                        </DialogHeader>
+                        <LocField />
                     </DialogContent>
                 </Dialog>
 

@@ -162,9 +162,16 @@ app.post('/api/login', async (req, res) => {
 // Save bone measurements (complex insert)
 app.post('/api/bones/complete', async (req, res) => {
   try {
-    const { specimenNumber, museumId, boneName, boneType, sex, user, measurements } = req.body;
+    const { specimenNumber, museumId, boneName, boneType, sex, user, localityData, measurements } = req.body;
     
-    console.log('Received data:', { specimenNumber, museumId, boneName, boneType, sex, user, measurements });
+    console.log('Received data:', { specimenNumber, museumId, boneName, boneType, sex, user, localityData, measurements });
+    
+    // Determine which table to use based on bone type
+    const axialBones = ['sacrum', 'cervical_vertebrae', 'thoracic_vertebrae', 'lumbar_vertebrae'];
+    const isAxialBone = axialBones.includes(boneType);
+    const measurementsTable = isAxialBone ? 'axial_measurements' : 'appendicular_measurements';
+    
+    console.log('Using table:', measurementsTable);
     
     // Step 1: Get museum abbreviation for specimen_name
     const [museumResult] = await db.promise().query(
@@ -179,8 +186,10 @@ app.post('/api/bones/complete', async (req, res) => {
       });
     }
     
-    const museumAbbreviation = museumResult[0].museum_name; // e.g., "SUB"
-    const specimenName = `${museumAbbreviation}-${specimenNumber}`; // e.g., "SUB-45"
+    const museumAbbreviation = museumResult[0].museum_name;
+    const specimenName = `${museumAbbreviation}-${specimenNumber}`;
+    
+    console.log('Creating specimen:', specimenName);
     
     // Step 2: Check if specimen exists
     const checkSpecimenQuery = `SELECT specimen_id FROM specimen WHERE specimen_name = ?`;
@@ -189,26 +198,29 @@ app.post('/api/bones/complete', async (req, res) => {
     let specimenId;
     
     if (existingSpecimen.length === 0) {
-      // Create new specimen
-      // Note: user_id is left as NULL for now - you may want to handle this later
+      // Create new specimen with taxonomy data
       const specimenQuery = `
-        INSERT INTO specimen (specimen_name, specimen_number, museum_id, sex, user_id) 
-        VALUES (?, ?, ?, ?, NULL)
+        INSERT INTO specimen (specimen_name, specimen_number, museum_id, sex, user_id, broad_region, country, locality, region) 
+        VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?)
       `;
       const [specimenResult] = await db.promise().query(specimenQuery, [
         specimenName,
         parseInt(specimenNumber),
         parseInt(museumId),
-        sex
+        sex,
+        localityData?.broadRegion || null,
+        localityData?.country || null,
+        localityData?.locality || null,
+        localityData?.region || null
       ]);
       specimenId = specimenResult.insertId;
-      console.log('Created new specimen:', specimenName, 'with ID:', specimenId);
+      console.log('Created new specimen with ID:', specimenId);
     } else {
       specimenId = existingSpecimen[0].specimen_id;
-      console.log('Specimen already exists:', specimenName, 'with ID:', specimenId);
+      console.log('Specimen already exists with ID:', specimenId);
     }
     
-    // Step 3: Insert into bone table (bone_id auto-increments)
+    // Step 3: Insert into bone table
     const boneQuery = `
       INSERT INTO bone (bone_name, bone_type, specimen_id) 
       VALUES (?, ?, ?)
@@ -217,37 +229,79 @@ app.post('/api/bones/complete', async (req, res) => {
     const boneId = boneResult.insertId;
     console.log('Inserted bone with auto-generated ID:', boneId);
     
-    // Step 4: Convert measurement names to database column names
-    const convertToColumnName = (measurementName) => {
-      let cleanName = measurementName
-        .replace(/\([^)]*\)/g, '')
-        .replace(/\//g, ' ')
-        .replace(/-/g, ' ')
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, '_');
-      
-      return `${boneType}_${cleanName}`;
+    // Step 4: Process measurements and handle vertebrae ranges
+    const columnsToInsert = {
+      bone_id: boneId,
+      bone_name: boneName
     };
     
-    // Step 5: Prepare the measurements insert
-    const columns = ['bone_id'];
-    const values = [boneId];
-    const placeholders = ['?'];
-    
-    // Add each measurement that has a value
+    // Process each measurement
     Object.keys(measurements).forEach(key => {
-      if (measurements[key] !== '' && measurements[key] !== null && measurements[key] !== undefined) {
-        const columnName = convertToColumnName(key);
-        columns.push(`\`${columnName}\``);
-        values.push(parseFloat(measurements[key]));
-        placeholders.push('?');
+      const value = measurements[key];
+      if (value === '' || value === null || value === undefined) {
+        return;
+      }
+      
+      // Check if it's a vertebrae bone type
+      if (boneType === 'cervical_vertebrae' || boneType === 'thoracic_vertebrae' || boneType === 'lumbar_vertebrae') {
+        const vertebraMatch = key.match(/^([CTL])(\d+)$/i);
+        if (vertebraMatch) {
+          const type = vertebraMatch[1].toLowerCase();
+          const number = vertebraMatch[2];
+          const columnName = `vertebra_${type}${number}_max_height`;
+          columnsToInsert[columnName] = parseFloat(value);
+          return;
+        }
+        
+        const rangeMatch = key.match(/^Max ([CTL])(\d+)-([CTL])(\d+) Height$/i);
+        if (rangeMatch) {
+          const type = rangeMatch[1].toLowerCase();
+          const startNum = parseInt(rangeMatch[2]);
+          const endNum = parseInt(rangeMatch[4]);
+          
+          for (let i = startNum; i <= endNum; i++) {
+            const columnName = `vertebra_${type}${i}_max_height`;
+            columnsToInsert[columnName] = parseFloat(value);
+          }
+          return;
+        }
+      }
+      
+      if (boneType === 'sacrum') {
+        let cleanName = key
+          .replace(/\([^)]*\)/g, '')
+          .replace(/\//g, ' ')
+          .replace(/-/g, ' ')
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, '_');
+        
+        const columnName = `sacrum_${cleanName}`;
+        columnsToInsert[columnName] = parseFloat(value);
+        return;
+      }
+      
+      if (!isAxialBone) {
+        let cleanName = key
+          .replace(/\([^)]*\)/g, '')
+          .replace(/\//g, ' ')
+          .replace(/-/g, ' ')
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, '_');
+        
+        const columnName = `${boneType}_${cleanName}`;
+        columnsToInsert[columnName] = parseFloat(value);
       }
     });
     
-    // Step 6: Insert into appendicular_measurements table
+    // Step 5: Build and execute the INSERT query
+    const columns = Object.keys(columnsToInsert).map(col => `\`${col}\``);
+    const values = Object.values(columnsToInsert);
+    const placeholders = values.map(() => '?');
+    
     const measurementsQuery = `
-      INSERT INTO appendicular_measurements (${columns.join(', ')}) 
+      INSERT INTO ${measurementsTable} (${columns.join(', ')}) 
       VALUES (${placeholders.join(', ')})
     `;
     
@@ -261,7 +315,8 @@ app.post('/api/bones/complete', async (req, res) => {
       message: 'All data saved successfully',
       boneId: boneId,
       specimenId: specimenId,
-      specimenName: specimenName
+      specimenName: specimenName,
+      measurementsTable: measurementsTable
     });
     
   } catch (error) {
