@@ -1,11 +1,13 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import {useRouter} from 'next/navigation'
 import "@/app/globals.css"
 import Field from "./fields"
 import TaxField from "./taxfields"
 import LocField from "./locfields"
 import { useBoneData } from "./context/BoneDataContext"
+import {useState} from 'react'
 
 import {
     Dialog,
@@ -18,7 +20,13 @@ import {
 } from "@/components/ui/dialog"
 
 function Left() {
+    const [loading, setLoading] = useState(false);
     const { handleSave, isSaving } = useBoneData();
+    
+    const router = useRouter();
+    if (loading) {
+        return <div className="p-4">Loading...</div>;
+    }
 
     return(
         <div className = "flex-col h-screen overflow-y-scroll">
@@ -26,8 +34,10 @@ function Left() {
             <div className = "flex py-10 justify-center items-center whitespace-nowrap">
                 <Button 
                     variant="outline" 
-                    className="lg:w-1/2 rounded-2xl bg-maroon text-white border-maroon hover:bg-maroon/90 hover:text-white"> 
+                    className="lg:w-1/2 rounded-2xl bg-maroon text-white border-maroon hover:bg-maroon/90 hover:text-white"
+                    onClick={() => {setLoading(true); router.push("/dashboard")}}> > 
                     Exit
+                    
                 </Button>
             </div>
 

@@ -41,7 +41,7 @@ function Left() {
             </Button>
         </div>
 
-        <div className="w-[90%] py-20">
+        <div className="w-[90%] py-10">
             <Specimen/>
         </div>
         

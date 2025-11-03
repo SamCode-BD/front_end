@@ -4,6 +4,7 @@ import {jwtDecode} from "jwt-decode"
 import { loadCraniometrics } from "./loadCraniometrics";
 import { loadInventory } from "./inventoryUtils";
 import { loadPostcranialMetrics } from "./metricsAPI";
+import { loadNonmetrics } from "./loadNonmetrics";
 
 
 type DecodedToken = {
@@ -62,6 +63,7 @@ export async function loadSkeletonData(API_URL_ROOT: string, setAPI: any) {
       specimen: {
         specimen_id: specimenData.specimen_id,
         specimen_number: specimenData.specimen_number,
+        skeleton_name: skeletonData.skeleton_name,
         museum_id: specimenData.museum_id,
         sex: specimenData.sex || "",
       },
@@ -75,10 +77,10 @@ export async function loadSkeletonData(API_URL_ROOT: string, setAPI: any) {
           }
         : prev.taxonomy,
       locality: {
-        broad_region: specimenData.broad_region || "",
-        country: specimenData.country || "",
-        locality: specimenData.locality || "",
-        region: specimenData.region || "",
+        broad_region: specimenData.museum_id === 1 ? "East Coast" : specimenData.broad_region || "",
+        country: specimenData.museum_id === 1 ? "United States" : specimenData.country || "",
+        locality: specimenData.museum_id === 1 ? "Salisbury" : specimenData.locality || "",
+        region: specimenData.museum_id === 1 ? "MD" : specimenData.region || "",
       },
     }));
 
@@ -86,6 +88,7 @@ export async function loadSkeletonData(API_URL_ROOT: string, setAPI: any) {
     await loadInventory("cranial", specimenData.specimen_id, setAPI);
     await loadInventory("postcranial", specimenData.specimen_id, setAPI);
     await loadPostcranialMetrics(skeletonData.skeleton_id, setAPI);
+    await loadNonmetrics(API_URL_ROOT, specimenData.specimen_id, setAPI);
     
 
     console.log("✅ Skeleton data loaded successfully");

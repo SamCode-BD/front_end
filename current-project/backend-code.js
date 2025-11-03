@@ -338,7 +338,7 @@ app.get('/api/postcranial_metrics/:skeleton_id', (req, res) => {
     [skeleton_id],
     (err, rows) => {
       if (err) return res.status(500).json({ error: err.message });
-      console.log(rows);
+      //console.log(rows);
       if (!rows.length) return res.json([]);
 
       const row = rows[0];
@@ -704,6 +704,37 @@ function makeCrudRoutes(table, pk, allowedFields) {
   }
 });
 
+app.post(`/api/${table}/:id`, authenticateToken, async (req, res) => {
+    try {
+      const id = req.params.id;
+      const body = {};
+      for (const f of allowedFields) {
+        if (req.body[f] !== undefined) body[f] = req.body[f];
+      }
+      if (!Object.keys(body).length)
+        return res.status(400).json({ error: "No valid fields" });
+
+      // Ensure the PK is in the body so MySQL accepts the insert
+      //body[pk] = id;
+
+      // Upsert logic
+      const sql = `
+        INSERT INTO ${table} (${[pk, ...Object.keys(body)].map(c => `\`${c}\``).join(", ")})
+        VALUES (${[pk, ...Object.keys(body)].map(() => "?").join(", ")})
+        ON DUPLICATE KEY UPDATE ${Object.keys(body)
+          .map(c => `${c} = VALUES(${c})`)
+          .join(", ")}
+      `;
+
+      const values = [id, ...Object.values(body)];
+      await db.promise().query(sql, values);
+      res.status(201).json({ ok: true, [pk]: id });
+    } catch (err) {
+      console.error("Error inserting by ID:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
 
   // Update
   app.put(`/api/${table}/:id`, authenticateToken, (req, res) => {
@@ -737,7 +768,7 @@ makeCrudRoutes('museum', 'museum_id', ['museum_name','broad_region','country','l
 makeCrudRoutes('taxonomy', 'taxonomy_id', ['parvorder','superfamily','family','subfamily','genus','species','specimen_id']);
 makeCrudRoutes('taphonomy', 'taphonomy_id', ['specimen_id','bone_id','date_of_record']);
 makeCrudRoutes('bone', 'bone_id', ['skeleton_id','bone_type','bone_name','condition','specimen_id']);
-makeCrudRoutes('skeletal_inventory', 'skeleton_id', ['specimen_id','condition','skeleton_type','measurements']);
+makeCrudRoutes('skeletal_inventory', 'skeleton_id', ['specimen_id', 'skeleton_type','skeleton_name']);
 makeCrudRoutes('cranium_measurements', 'specimen_id', ['specimen_id', 'maximum_cranial_length', 'maximum_cranial_breadth',
                'bizygomatic_diameter', 'basion_bregma_height', 'cranial_base_length', 'basion_prosthion_length',
                'maxillo_alveolar_breadth', 'maxillo_alveolar_length', 'biauricular_breadth', 'upper_facial_height',
@@ -748,6 +779,62 @@ makeCrudRoutes('mandible_measurements', 'specimen_id', ['specimen_id', 'chin_hei
                'breadth_of_the_mandibular_body_at_the_mental_foramen', 'bigonial_width', 'bicondylar_breadth',
                'minimum_ramus_breadth', 'maximum_ramus_breadth', 'maximum_ramus_height', 'mandibular_length', 'mandibular_angle']);
 makeCrudRoutes('has_skeleton', 'specimen_id', ['specimen_id', 'skeleton_id']);
+
+// -------------------- FACIAL, LATERAL, BASILAR, MANDIBULAR, MACROMORPHOSCOPICS --------------------
+makeCrudRoutes('facial', 'specimen_id', [
+  'left_infraorbital_suture', 'right_infraorbital_suture',
+  'left_infraorbital_foramen', 'right_infraorbital_foramen',
+  'left_zygomaticofacial_foramen', 'right_zygomaticofacial_foramen',
+  'metopic_suture',
+  'left_supraorbital_notch', 'right_supraorbital_notch',
+  'left_supraorbital_foramen', 'right_supraorbital_foramen',
+  'left_supratrochlear_notch', 'right_supratrochlear_notch',
+  'left_coronal_ossicle', 'right_coronal_ossicle',
+  'left_epipteric_bone', 'right_epipteric_bone'
+]);
+
+makeCrudRoutes('lateral', 'specimen_id', [
+  'bregmatic_bone', 'saggital_ossicle',
+  'left_parietal_foramen', 'midline_parietal_foramen', 'right_parietal_foramen',
+  'apical_bone', 'inca_bone',
+  'left_lambdoid_ossicle', 'right_lamdoid_ossicle',
+  'left_asterionic_bone', 'right_asterionic_bone',
+  'left_ossicle_in_occipitomastoid_suture', 'right_ossicle_in_occipitomastoid_suture',
+  'left_parietal_notch_bone', 'right_parietal_notch_bone',
+  'left_auditory_exostosis', 'right_auditory_exostosis',
+  'left_mastoid_foramen_number', 'right_mastoid_foramen_number',
+  'left_mastoid_foramen_location', 'right_mastoid_foramen_location'
+]);
+
+makeCrudRoutes('basilar', 'specimen_id', [
+  'left_condylar_canal', 'right_condylar_canal',
+  'left_divided_hypoglossal_canal', 'right_divided_hypoglossal_canal',
+  'left_tympanic_dehiscence', 'right_tympanic_dehiscence',
+  'left_foramen_spinosum_incomplete', 'right_foramen_spinosum_incomplete',
+  'left_foramen_ovale_incomplete', 'right_foramen_ovale_incomplete',
+  'left_pterygospinous_bridge', 'right_pterygospinous_bridge',
+  'left_pterygoalar_bridge', 'right_pterygoalar_bridge',
+  'palatine_torus_development', 'palatine_torus_location'
+]);
+
+makeCrudRoutes('mandibular', 'specimen_id', [
+  'left_mylohyoid_bridge_development', 'right_mylohyoid_bridge_development',
+  'left_mylohyoid_bridge_location', 'right_mylohyoid_bridge_location',
+  'left_mental_foramen', 'right_mental_foramen',
+  'left_mandibular_torus', 'right_mandibular_torus'
+]);
+
+makeCrudRoutes('macromorphoscopics', 'specimen_id', [
+  'anterior_nasal_spine', 'inferior_nasal_aperture',
+  'interorbital_breadth', 'malar_tubercule',
+  'nasal_aperture_shape', 'nasal_aperture_width',
+  'nasal_bone_contour', 'nasal_bone_shape',
+  'nasal_overgrowth', 'nasofrontal_suture',
+  'orbital_shape', 'postbregmatic_depression',
+  'posterior_zygomatic_tubercule', 'supranasal_suture',
+  'zygomaticomaxillary_suture_course', 'transverse_palatine_suture'
+]);
+
 
 // -------------------- START SERVER --------------------
 app.listen(port, () => {

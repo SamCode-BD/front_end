@@ -8,9 +8,20 @@ import { Table, TextField, Select } from "@radix-ui/themes";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import { useState } from "react";
 import type { PostcranialCategory, PostcranialRow } from "./postcranial-inventory-list";
-import { postcranial_inventory_list, BoxTypeEnum } from "./postcranial-inventory-list";
+import { postcranial_inventory_list, BoxTypeEnum, doesNotRequireBoneSideDropdown, excludeCategoriesFromTaphonomy } from "./postcranial-inventory-list";
 import "./InventoryStyles.css";
 import Taphonomy from "./Taphonomy";
+import { Button } from "@/components/ui/button"
+import { filterTaphonomyDropdownTags } from "./postcranial-inventory-list";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { MoreHorizontal } from "lucide-react"
 
 import { useEditSkeletonAPI } from "@/app/skeleton-editor/EditSkeletonAPIContext";
 
@@ -28,6 +39,7 @@ const pc_types: Record<string, PostcranialType> = {
 export default function PostcranialInventory() {
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
   const [selectedBone, setSelectedBone] = useState("");
+  const [selectedRow, setSelectedRow] = useState<PostcranialRow | null>(null);
   const { api, updateField } = useEditSkeletonAPI();
 
   // --- Helper: unified entry name builder ---
@@ -47,7 +59,7 @@ export default function PostcranialInventory() {
       case BoxTypeEnum.CHECKBOX:
         return (
           <Checkbox.Root
-            className="w-6 h-6 mx-2 border border-gray-400 rounded flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-6 h-6 mx-2 border border-gray-400 rounded flex items-start justify-center focus:outline-none focus:ring-2 focus:ring-blue-500"
             checked={
               api.postcranial_inventory.find(i => i.inv_entry_name === entryName)?.isChecked || false
             }
@@ -219,10 +231,9 @@ export default function PostcranialInventory() {
                         <Table.Row
                           key={j}
                           onMouseEnter={() => setHoveredRowIndex(j)}
-                          onMouseLeave={() => setHoveredRowIndex(null)}
                           className="align-top"
                         >
-                          {/* Leftmost bone label (e.g., “L” / “R”) */}
+                          {/* Leftmost bone label*/}
                           {!row.noNameCell && (
                             <Table.RowHeaderCell className="table-row-header-cell bone">
                               {row.boneName}
@@ -233,13 +244,44 @@ export default function PostcranialInventory() {
 
                           {/* Edit button */}
                           <Table.Cell className="table-cell edit flex justify-center items-center">
-                            {hoveredRowIndex === j && (
+                            {hoveredRowIndex === j && !excludeCategoriesFromTaphonomy(row) && (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" className="h-8 w-8 p-0">
+                                    <span className="sr-only">Open menu</span>
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>Taphonomy</DropdownMenuLabel>
+                                    {doesNotRequireBoneSideDropdown(row) ?
+                                    <DropdownMenuItem onClick={() => {
+                                      setSelectedBone(buildEntryName(row));
+                                      setSelectedRow(row)}}>
+                                      Edit
+                                    </DropdownMenuItem>
+                                    :
+                                    filterTaphonomyDropdownTags(row.rowType.columnText).map((label, i) =>
+                                    <>
+                                    <DropdownMenuItem
+                                      key={i}
+                                      onClick={() => setSelectedBone(buildEntryName(row, label))}
+                                    >
+                                      {label}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    </>
+                                    )}
+                                  </DropdownMenuContent>
+                                  {/*
                               <button
                                 className="w-10"
-                                onClick={() => setSelectedBone(row.boneName)}
+                                onClick={() => setSelectedRow(row)}
                               >
                                 Edit
                               </button>
+                              */}
+                              </DropdownMenu>
                             )}
                           </Table.Cell>
                         </Table.Row>
@@ -252,7 +294,8 @@ export default function PostcranialInventory() {
           </Tabs>
         </div>
 
-        {selectedBone != "" && <Taphonomy boneName={selectedBone} />}
+        {selectedBone != null && selectedRow != null
+        && <Taphonomy boneName={selectedBone} />}
       </div>
     );
   }

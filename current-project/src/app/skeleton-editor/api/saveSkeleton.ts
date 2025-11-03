@@ -3,6 +3,7 @@ import { EditSkeletonAPI } from "../skeleton-editor-types";
 import { loadCraniometrics } from "./loadCraniometrics";
 import { saveCraniometrics } from "./saveCraniometrics";
 import { saveInventory } from "./inventoryUtils";
+import {saveNonmetrics} from "./saveNonmetrics";
 import { savePostcranialMetrics } from "./metricsAPI";
 
 /**
@@ -112,7 +113,7 @@ export async function saveSkeletonData(API_URL_ROOT: string, api: EditSkeletonAP
     const skeletonBody = {
       specimen_id: specimenId,
       skeleton_type: "full",
-      skeleton_name: "Test Skeleton",
+      skeleton_name: api.specimen.skeleton_name,
     };
 
     const skeletonMethod = api.skeleton_id && api.skeleton_id > 0 ? "PUT" : "POST";
@@ -137,6 +138,7 @@ export async function saveSkeletonData(API_URL_ROOT: string, api: EditSkeletonAP
     await saveInventory("cranial", api.specimen.specimen_id, api.cranial_inventory);
     await saveInventory("postcranial", api.specimen.specimen_id, api.postcranial_inventory);
     await savePostcranialMetrics(api.skeleton_id, api.postcranial_metrics);
+    await saveNonmetrics(api);
     console.log(api);
 
     

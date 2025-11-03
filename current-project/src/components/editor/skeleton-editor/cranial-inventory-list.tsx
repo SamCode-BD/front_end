@@ -16,6 +16,14 @@ export const cranial_inventory_list = {
         { boneName: "Zygomatic", numBoxes: 2 },
         { boneName: "Maxilla", numBoxes: 2 },
         { boneName: "Mandible", numBoxes: 3 },
-        { boneName: "Teeth", numBoxes: 0 }
+        //{ boneName: "Teeth", numBoxes: 0 }
     ]
 }
+
+export const excludeCategoriesFromTaphonomy = (row: CranialInventoryRow) => {
+    let exclude =
+    [
+    "Teeth"
+    ];
+    return exclude.some(term => row.boneName.includes(term));
+};

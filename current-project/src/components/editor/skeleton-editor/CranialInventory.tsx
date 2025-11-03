@@ -5,6 +5,7 @@ import { cranial_inventory_list, CranialInventoryList, CranialInventoryRow } fro
 import Taphonomy from "./Taphonomy"
 import "./InventoryStyles.css"
 import { useEditSkeletonAPI } from "@/app/skeleton-editor/EditSkeletonAPIContext";
+import { excludeCategoriesFromTaphonomy } from "./cranial-inventory-list";
 
 export default function CranialInventory() {
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
@@ -100,6 +101,7 @@ export default function CranialInventory() {
                       </div>
                     </Table.Cell>
                     : //for teeth row only
+                  
                     <Table.Cell className="table-cell inventory">
                         <div className = "flex flex-col items-center gap-1">
                             <p>Enter number of teeth:</p>

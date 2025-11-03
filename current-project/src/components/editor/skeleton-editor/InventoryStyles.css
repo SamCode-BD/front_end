@@ -11,7 +11,6 @@
   padding: 8px 0px;
   text-align: center; /* center all columns, can adjust per column below */
   vertical-align: middle;
-  white-space: nowrap; /* prevent wrapping to keep alignment */
 }
 
 /* Optional: align columns differently */

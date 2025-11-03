@@ -4,9 +4,11 @@ import {taphonomy_options} from "@/components/editor/taphonomy-options-list";
 import HorizontalRadioButton from "@/components/ui/HorizontalRadioButton";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { trimTagsFromBoneName } from "./postcranial-inventory-list";
 
 function Taphonomy(props) {
     let [activeSubmenu, setActiveSubmenu] = useState("bone color");
+    const boneName = trimTagsFromBoneName(props.boneName);
 
     const getContents = () => {
         if(activeSubmenu == "bone color") {
@@ -65,7 +67,8 @@ function Taphonomy(props) {
 
         return(
             <div className="w-full">
-                <h3>{props.boneName}</h3>
+                <h3>{boneName}</h3>
+
                 <div className = "w-1/2 justify-left">
                     <label htmlFor="bone-cond">Bone Condition: </label>
                     <div className="mt-1 flex gap-2 text-left">

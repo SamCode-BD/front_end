@@ -5,6 +5,7 @@ export type User = {
 
 export type Specimen = {
     specimen_id: number,
+    skeleton_name : string,
     specimen_number: number,
     museum_id: number,
     sex: string
@@ -38,7 +39,8 @@ export type Inventory = {
 }
 
 export type Taphonomy = {
-    taphonomy_id: number
+    bone_name: string,
+    taphonomy_id: number,
     bone_condition: number,
     surface_exposure: boolean,
     bone_color: string,
@@ -52,7 +54,7 @@ export type Taphonomy = {
 export type CranialNonmetric = {
     category: string
     nonmetric_name: string
-    value_str?: string
+    value_str: string
 }
 
 export type EditSkeletonAPI = {
@@ -78,6 +80,7 @@ export const DEFAULT_EDIT_SKELETON_API: EditSkeletonAPI = {
   },
   specimen: {
     specimen_id: -1,
+    skeleton_name: "",
     specimen_number: 0,
     museum_id: 0,
     sex: "",

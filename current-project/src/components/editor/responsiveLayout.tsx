@@ -17,11 +17,7 @@ export default function ResponsiveLayout({ Left, Right }: LayoutProps) {
 
         {/* Left Sidebar - will be hidden on mobile and shown as overlay when triggered */}
         <Sidebar side="left" variant="sidebar" className="hidden md:block md:col-span-1">
-            <SidebarContent>
-                <div className="h-full bg-gray-400/10 p-4">
                 <Left />
-                </div>
-            </SidebarContent>
         </Sidebar>
   
 

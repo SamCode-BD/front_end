@@ -27,6 +27,15 @@ function Field() {
         <div className="flex flex-col ml-5 space-y-5 m-auto">
 
             <div className="flex items-center justify-between space-x-2">
+                <p>Skeleton Name: </p>
+                <Input
+                    className="h-[40px] w-2/3 max-w-sm bg-white"
+                    value={api.specimen.skeleton_name}
+                    onChange={(e) => updateField("specimen", "skeleton_name", e.target.value)}
+                />
+            </div>
+
+            <div className="flex items-center justify-between space-x-2">
                 <p>Specimen Number: </p>
                 <Input
                     className="h-[40px] w-2/3 max-w-sm bg-white"

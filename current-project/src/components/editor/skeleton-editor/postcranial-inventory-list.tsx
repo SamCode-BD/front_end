@@ -75,33 +75,47 @@ const make_header = (boneName: string): PostcranialRow => ({
   isHeader: true
 })
 
+/** Bulk-create rows that all share the same parentInfo. */
+function makeRowsWithParentInfo(
+  parentInfo: string,
+  rowsData: (readonly [string, string, InputRange?])[]
+): PostcranialRow[] {
+  return rowsData.map(([boneName, type, inputRange]) =>
+    make_row(boneName, type, inputRange, parentInfo)
+  )
+}
+
 // --- Normal group rows ---
 const vertebrae_rows: PostcranialRow[] = [
-  make_row("C1", "VTB_2Chk"),
-  make_row("C2", "VTB_2Chk"),
-  make_row("C3-C6", "VTB_2Sel", { min: 0, max: 4 }),
-  make_row("T1-T9", "VTB_2Sel", { min: 0, max: 4 }),
-  make_row("C7", "VTB_2Chk"),
-  make_row("T10", "VTB_2Chk"),
-  make_row("T11", "VTB_2Chk"),
-  make_row("T12", "VTB_2Chk"),
-  make_row("L1", "VTB_2Chk"),
-  make_row("L2", "VTB_2Chk"),
-  make_row("L3", "VTB_2Chk"),
-  make_row("L4", "VTB_2Chk"),
-  make_row("L5", "VTB_2Chk"),
+  ...makeRowsWithParentInfo("Vertebrae", [
+    ["C1", "LR"],
+    ["C2", "LR"],
+    ["C3-C6", "LRSel", { min: 0, max: 4 }],
+    ["T1-T9", "LRSel", { min: 0, max: 4 }],
+    ["C7", "LR"],
+    ["T10", "LR"],
+    ["T11", "LR"],
+    ["T12", "LR"],
+    ["L1", "LR"],
+    ["L2", "LR"],
+    ["L3", "LR"],
+    ["L4", "LR"],
+    ["L5", "LR"]
+  ]),
   make_header("Unidentifiable Vertebrae"),
-  make_row("Thoracic - Unidentifiable", "SingleNum", { min: 0, max: 12 }),
-  make_row("Lumbar - Unidentifiable", "SingleNum", { min: 0, max: 12 })
+  ...makeRowsWithParentInfo("Unidentifiable Vertebrae", [
+    ["Thoracic - Unidentifiable", "SingleNum", { min: 0, max: 12 }],
+    ["Lumbar - Unidentifiable", "SingleNum", { min: 0, max: 12 }]
+  ])
 ]
 
-const ribs_rows: PostcranialRow[] = [
-  make_row("R1", "LR"),
-  make_row("R2", "LR"),
-  make_row("R3-R10", "LRSel", { min: 0, max: 8 }),
-  make_row("R11", "LR"),
-  make_row("R12", "LR")
-]
+const ribs_rows: PostcranialRow[] = makeRowsWithParentInfo("Ribs", [
+  ["R1", "LR"],
+  ["R2", "LR"],
+  ["R3-R10", "LRSel", { min: 0, max: 8 }],
+  ["R11", "LR"],
+  ["R12", "LR"]
+])
 
 const axgeneral_rows: PostcranialRow[] = [
   make_row("Sacrum", "Single"),
@@ -120,13 +134,13 @@ function make_appgeneral_rows(bone: string): PostcranialRow[] {
   const columns = ["Prox Epi", "Prox 1/3", "Mid 1/3", "Dist 1/3", "Dist Epi"]
   return [
     {
-      parentInfo: bone.toLowerCase(),
+      parentInfo: bone,
       boneName: "L",
       rowType: { numBoxRows: 1, numColumns: 5, columnText: columns, boxType: BoxTypeEnum.CHECKBOX },
       isHeader: false
     },
     {
-      parentInfo: bone.toLowerCase(),
+      parentInfo: bone,
       boneName: "R",
       rowType: { numBoxRows: 1, numColumns: 5, columnText: columns, boxType: BoxTypeEnum.CHECKBOX },
       isHeader: false
@@ -151,16 +165,16 @@ const appgeneral_rows: PostcranialRow[] = [
   ...make_appgeneral_rows("Fibula")
 ]
 
-const shoulder_rows: PostcranialRow[] = [
-  make_row("Clavicle", "LR"),
-  make_row("Scapula", "LR")
-]
+const shoulder_rows: PostcranialRow[] = makeRowsWithParentInfo("", [
+  ["Clavicle", "LR"],
+  ["Scapula", "LR"]
+])
 
-const sternum_rows: PostcranialRow[] = [
-  make_row("Manubrium", "Single"),
-  make_row("Body", "Single"),
-  make_row("Xiphoid", "Single")
-]
+const sternum_rows: PostcranialRow[] = makeRowsWithParentInfo("Sternum", [
+  ["Manubrium", "Single"],
+  ["Body", "Single"],
+  ["Xiphoid", "Single"]
+])
 
 const carpal_names = [
   "Scaphoid",
@@ -172,30 +186,42 @@ const carpal_names = [
   "Capitate",
   "Hamate"
 ]
-const carpal_rows: PostcranialRow[] = carpal_names.map((name) => make_row(name, "LRQ")).concat(make_row("Unidentifiable", "SingleNum"))
+const carpal_rows: PostcranialRow[] = makeRowsWithParentInfo(
+  "",
+  carpal_names.map((name) => [name, "LRQ"] as const)
+).concat(make_row("Unidentifiable", "SingleNum", undefined, "Carpals"))
 
 const metacarpal_names = ["1", "2", "3", "4", "5", "Unidentifiable"]
-const metacarpal_rows: PostcranialRow[] = metacarpal_names
-  .map((name) => make_row(name, "LRN", { min: 0, max: 10 }))
-  .concat(make_row("Unidentifiable", "SingleNum"))
+const metacarpal_rows: PostcranialRow[] = makeRowsWithParentInfo(
+  "Metacarpals",
+  metacarpal_names.map((name) => [name, "LRN", { min: 0, max: 10 }] as const)
+).concat(make_row("Unidentifiable", "SingleNum", undefined, "Metacarpals"))
 
 const tarsal_names = ["Calcaneus", "Talus", "Cuboid", "1st Cuneiform", "2nd Cuneiform", "3rd Cuneiform", "Navicular"]
-const tarsal_rows: PostcranialRow[] = tarsal_names.map((name) => make_row(name, "LRQ")).concat(make_row("Unidentifiable", "SingleNum"))
+const tarsal_rows: PostcranialRow[] = makeRowsWithParentInfo(
+  "",
+  tarsal_names.map((name) => [name, "LRQ"] as const)
+).concat(make_row("Unidentifiable", "SingleNum", undefined, "Tarsals"))
 
 const metatarsal_names = ["1", "2", "3", "4", "5", "Unidentifiable"]
-const metatarsal_rows: PostcranialRow[] = metatarsal_names
-  .map((name) => make_row(name, "LRN", { min: 0, max: 10 }))
-  .concat(make_row("Unidentifiable", "SingleNum"))
+const metatarsal_rows: PostcranialRow[] = makeRowsWithParentInfo(
+  "Metatarsals",
+  metatarsal_names.map((name) => [name, "LRN", { min: 0, max: 10 }] as const)
+).concat(make_row("Unidentifiable", "SingleNum", undefined, "Metatarsals"))
 
 const phalanges_rows: PostcranialRow[] = [
   make_header("Hand Phalanges"),
-  make_row("Prox", "LRQN"),
-  make_row("Middle", "LRQN"),
-  make_row("Distal", "LRQN"),
+  ...makeRowsWithParentInfo("Hand Phalanges", [
+    ["Prox", "LRQN"],
+    ["Middle", "LRQN"],
+    ["Distal", "LRQN"]
+  ]),
   make_header("Foot Phalanges"),
-  make_row("Prox", "LRQN"),
-  make_row("Middle", "LRQN"),
-  make_row("Distal", "LRQN")
+  ...makeRowsWithParentInfo("Foot Phalanges", [
+    ["Prox", "LRQN"],
+    ["Middle", "LRQN"],
+    ["Distal", "LRQN"]
+  ])
 ]
 
 // --- Final Export ---
@@ -218,4 +244,60 @@ export const postcranial_inventory_list: Record<string, PostcranialCategory[]> =
     { name: "Metatarsals", rows: metatarsal_rows },
     { name: "Phalanges", rows: phalanges_rows }
   ]
+}
+
+
+export const excludeCategoriesFromTaphonomy = (row: PostcranialRow) => {
+    let rowName = row.parentInfo? row.parentInfo + " " + row.boneName : row.boneName;
+    let exclude =
+    [
+    "Unidentifiable",
+    "Metacarpals",
+    "Metatarsals",
+    "Phalanges"
+    ];
+    return exclude.some(term => rowName.includes(term));
+};
+
+export const trimTagsFromBoneName = (boneName: string): string => {
+  const tags = ["Prox Epi", "Prox 1/3", "Mid 1/3", "Dist 1/3", "Dist Epi", "#"];
+  
+  let trimmed = boneName;
+  for (const tag of tags) {
+    // Remove each tag wherever it appears, ignoring case and extra spaces
+    const regex = new RegExp(tag, "gi");
+    trimmed = trimmed.replace(regex, "");
+  }
+
+  // Clean up leftover double spaces and trim edges
+  return trimmed.trim().replace(/\s{2,}/g, " ");
+};
+
+export const filterTaphonomyDropdownTags = (tags: string[]): string[] => {
+  const exclude_tags = ["Prox Epi", "Prox 1/3", "Mid 1/3", "Dist 1/3", "Dist Epi", "#"];
+
+  // Return only tags not in exclude_tags (case-insensitive)
+  return tags.filter(
+    (tag) => !exclude_tags.some((excluded) => excluded.toLowerCase() === tag.toLowerCase())
+  );
+};
+
+
+export const doesNotRequireBoneSideDropdown = (row: PostcranialRow) => { 
+  let rowName = row.parentInfo? row.parentInfo + " " + row.boneName : row.boneName;
+  let exclude = [
+    "Sacrum",
+    "Coccyx",
+    "Humerus",
+    "Radius",
+    "Ulna",
+    "Femur",
+    "Patella",
+    "Tibia",
+    "Fibula",
+    "Sternum Manubrium",
+    "Sternum Body",
+    "Sternum Xiphoid"
+  ];
+  return exclude.some(term => rowName.includes(term));
 }
