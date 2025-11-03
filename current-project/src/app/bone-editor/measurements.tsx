@@ -4,6 +4,7 @@ import { Vertebrae } from "./vertebrae"
 import Skull from "./skull"
 import React, { useState, useEffect } from 'react';
 import { useBoneData } from "./context/BoneDataContext"
+import { EditSkeletonAPIProvider } from "@/app/skeleton-editor/EditSkeletonAPIContext"
 
 function Measurements() {
     const { selectedBone, measurements, setMeasurements } = useBoneData();
@@ -42,7 +43,7 @@ function Measurements() {
         } else if (boneID === "lumbar_vertebrae") {
             return <div><Vertebrae selectedList={boneID}></Vertebrae></div>;
         } else if (boneID === "skull") {
-            return <div><Skull></Skull></div>;
+            return <div><EditSkeletonAPIProvider><Skull></Skull></EditSkeletonAPIProvider></div>;
         }
         // Otherwise render appendicular bones
         else {
