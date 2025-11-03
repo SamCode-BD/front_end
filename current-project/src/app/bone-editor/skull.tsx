@@ -13,9 +13,8 @@ import CranialInventory from '@/components/editor/skeleton-editor/CranialInvento
 
 function Skull() {
     return(
-        <div className = "flex flex-col h-screen col-span-2 lg:col-span-4 space-y-4 bg-gray-100/10">
 
-            <div className="flex justify-center px-4">
+            <div>
                 
                 <Tabs defaultValue="Craniometrics" className="relative w-full">
                     <TabsList className = "grid w-full grid-cols-3">
@@ -35,7 +34,6 @@ function Skull() {
                 </Tabs>
 
             </div>
-        </div>
 
     )
 } export default Skull

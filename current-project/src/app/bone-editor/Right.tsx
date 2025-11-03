@@ -22,7 +22,7 @@ function InnerRight() {
             <div className="w-full flex h-[10%] px-20"><h1>{selectedBone}</h1></div>
 
             <div className="flex justify-center px-4">
-                <Tabs defaultValue="measurements" className="relative w-[800px]">
+                <Tabs defaultValue="measurements" className="relative w-full">
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="measurements">Measurements</TabsTrigger>
                         <TabsTrigger value="taphonomy">Taphonomy</TabsTrigger>
