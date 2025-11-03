@@ -35,7 +35,7 @@ function Left() {
                 <Button 
                     variant="outline" 
                     className="lg:w-1/2 rounded-2xl bg-maroon text-white border-maroon hover:bg-maroon/90 hover:text-white"
-                    onClick={() => {setLoading(true); router.push("/dashboard")}}> > 
+                    onClick={() => {setLoading(true); router.push("/dashboard")}}>
                     Exit
                     
                 </Button>

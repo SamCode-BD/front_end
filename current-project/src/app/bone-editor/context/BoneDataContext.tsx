@@ -108,7 +108,7 @@ export function BoneDataProvider({ children }: { children: ReactNode }) {
             // Extract taphonomy data from measurements
             const { taphonomy, ...otherMeasurements } = measurements;
             
-            const response = await fetch('http://localhost:3001/api/bones/complete', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/bones/complete`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
