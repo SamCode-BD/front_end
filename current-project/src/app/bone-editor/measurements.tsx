@@ -13,7 +13,7 @@ function Measurements() {
         const normalized = normalizeBone(selectedBone);
         if (postcranialmetrics_list.hasOwnProperty(normalized)) {
             setBoneID(normalized);
-        } else if (selectedBone === "Skull") {
+        } else if (selectedBone === "Add Skull") {
             setBoneID("skull");
         } else {
             console.warn(`Unknown bone type: ${selectedBone}`);
