@@ -1,12 +1,62 @@
 import TCheckbox from "@/components/ui/TCheckbox";
-import React, {useState, useContext} from 'react';
+import React, {useState, useEffect} from 'react';
 import {taphonomy_options} from "./taphonomy-options-list";
 import HorizontalRadioButton from "@/components/ui/HorizontalRadioButton";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useBoneData } from "./context/BoneDataContext";
 
 function Taphonomy(props) {
     let [activeSubmenu, setActiveSubmenu] = useState("bone color");
+    const { measurements, setMeasurements } = useBoneData();
+
+    // Initialize taphonomy structure in measurements if it doesn't exist
+    useEffect(() => {
+        if (!measurements.taphonomy) {
+            setMeasurements({
+                ...measurements,
+                taphonomy: {
+                    staining: [],
+                    surface_damage: [],
+                    adherent_materials: [],
+                    curation_modifications: [],
+                    cultural_modifications: []
+                }
+            });
+        }
+    }, []);
+
+    // Get current taphonomy data, with fallback to empty structure
+    const taphonomy = measurements.taphonomy || {
+        staining: [],
+        surface_damage: [],
+        adherent_materials: [],
+        curation_modifications: [],
+        cultural_modifications: []
+    };
+
+    const handleCheckboxChange = (category: string, value: string, checked: boolean) => {
+        console.log('handleCheckboxChange called:', { category, value, checked });
+        console.log('Current taphonomy state:', taphonomy);
+        
+        const currentArray = taphonomy[category] || [];
+        const newArray = checked 
+            ? [...currentArray, value]
+            : currentArray.filter((item: string) => item !== value);
+        
+        console.log('New array for', category, ':', newArray);
+        
+        const newMeasurements = {
+            ...measurements,
+            taphonomy: {
+                ...taphonomy,
+                [category]: newArray
+            }
+        };
+        
+        console.log('Setting new measurements:', newMeasurements);
+        setMeasurements(newMeasurements);
+    };
 
     const getContents = () => {
         if(activeSubmenu == "bone color") {
@@ -19,21 +69,42 @@ function Taphonomy(props) {
         if(activeSubmenu == "staining") {
             return <div>
                 <div className="p-2.5 flex flex-col justify-start items-start">
-                {taphonomy_options.staining.map((name, i) => <TCheckbox name={name} key={i} onChange={() => {}}/>)}
+                {taphonomy_options.staining.map((name, i) => (
+                    <TCheckbox 
+                        key={`staining-${i}`}
+                        name={name} 
+                        checked={taphonomy.staining?.includes(name) || false}
+                        onChange={(checked) => handleCheckboxChange('staining', name, checked)}
+                    />
+                ))}
                 </div>
             </div>
         }
         if(activeSubmenu == "surface damage") {
             return <div>
                 <div className="p-2.5 flex flex-col justify-start items-start">
-                {taphonomy_options.surface_damage.map((name, i) => <TCheckbox name={name} key={i} onChange={() => {}}/>)}
+                {taphonomy_options.surface_damage.map((name, i) => (
+                    <TCheckbox 
+                        key={`surface-damage-${i}`}
+                        name={name} 
+                        checked={taphonomy.surface_damage?.includes(name) || false}
+                        onChange={(checked) => handleCheckboxChange('surface_damage', name, checked)}
+                    />
+                ))}
                 </div>
             </div>
         }
         if(activeSubmenu == "adherent materials") {
             return (<div>
                 <div className="p-2.5 flex flex-col justify-start items-start">
-                {taphonomy_options.adherent_materials.map((name, i) => <TCheckbox name={name} key={i} onChange={() => {}}/>)}
+                {taphonomy_options.adherent_materials.map((name, i) => (
+                    <TCheckbox 
+                        key={`adherent-materials-${i}`}
+                        name={name} 
+                        checked={taphonomy.adherent_materials?.includes(name) || false}
+                        onChange={(checked) => handleCheckboxChange('adherent_materials', name, checked)}
+                    />
+                ))}
                 </div>
             </div>)
         }
@@ -41,13 +112,27 @@ function Taphonomy(props) {
             return (<div>
                 <div className="flex flex-col md:flex-row justify-center gap-10">
                     <div className="p-2.5 flex flex-col justify-start items-start">
-                        <h3>Curation Modifications</h3>
-                        {taphonomy_options.curation_modifications.map((name, i) => <TCheckbox name={name} key={i} onChange={() => {}}/>)}
+                        <h3 className="font-semibold mb-2">Curation Modifications</h3>
+                        {taphonomy_options.curation_modifications.map((name, i) => (
+                            <TCheckbox 
+                                key={`curation-mods-${i}`}
+                                name={name} 
+                                checked={taphonomy.curation_modifications?.includes(name) || false}
+                                onChange={(checked) => handleCheckboxChange('curation_modifications', name, checked)}
+                            />
+                        ))}
                     </div>
                     
                     <div className="p-2.5 flex flex-col justify-start items-start">
-                        <h3>Cultural Modifications</h3>
-                        {taphonomy_options.cultural_modifications.map((name, i) => <TCheckbox name={name} key={i} onChange={() => {}}/>)}
+                        <h3 className="font-semibold mb-2">Cultural Modifications</h3>
+                        {taphonomy_options.cultural_modifications.map((name, i) => (
+                            <TCheckbox 
+                                key={`cultural-mods-${i}`}
+                                name={name} 
+                                checked={taphonomy.cultural_modifications?.includes(name) || false}
+                                onChange={(checked) => handleCheckboxChange('cultural_modifications', name, checked)}
+                            />
+                        ))}
                     </div>
                 </div>
             </div>)
@@ -89,6 +174,12 @@ function Taphonomy(props) {
                     </div>
                 </div>
                 {getContents()}
+                
+                {/* Debug view - remove this in production */}
+                <div className="mt-4 p-4 bg-gray-100 rounded text-xs">
+                    <p className="font-semibold">Current Taphonomy State (Debug):</p>
+                    <pre>{JSON.stringify(taphonomy, null, 2)}</pre>
+                </div>
             </div>
         );
     
