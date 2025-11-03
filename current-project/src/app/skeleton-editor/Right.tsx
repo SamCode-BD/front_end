@@ -29,7 +29,7 @@ function Right() {
                     <TabsTrigger value="dental">Dental</TabsTrigger>
                 </TabsList>
                     <TabsContent value="cranium">
-                        <Tabs className="relative w-full">
+                        <Tabs defaultValue="Craniometrics" className="relative w-full">
                             <TabsList className = "grid w-full grid-cols-3">
                                 <TabsTrigger value="Craniometrics">Metrics</TabsTrigger>
                                 <TabsTrigger value="Cranial Nonmetrics">Nonmetrics</TabsTrigger>
@@ -47,7 +47,7 @@ function Right() {
                         </Tabs>
                     </TabsContent>
                     <TabsContent value="postcranial">
-                        <Tabs className="relative w-full">
+                        <Tabs defaultValue="Postcranial Metrics" className="relative w-full">
                             <TabsList className = "grid w-full grid-cols-2">
                                 <TabsTrigger value="Postcranial Metrics">Metrics</TabsTrigger>
                                 <TabsTrigger value="Postcranial Inventory">Inventory</TabsTrigger>
@@ -61,7 +61,7 @@ function Right() {
                         </Tabs>
                     </TabsContent>
                     <TabsContent value="dental">
-                        <Tabs className="relative w-full">
+                        <Tabs defaultValue="Dental Permanent" className="relative w-full">
                             <TabsList className = "grid w-full grid-cols-2">
                                 <TabsTrigger value="Dental Permanent">Permanent</TabsTrigger>
                                 <TabsTrigger value="Dental Deciduous">Deciduous</TabsTrigger>

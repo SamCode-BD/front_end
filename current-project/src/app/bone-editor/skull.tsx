@@ -7,65 +7,35 @@ import {
 
 import {Table, TextField} from '@radix-ui/themes'
 import {craniometrics_list} from "@/components/editor/skeleton-editor/craniometrics-list"
+import Craniometrics from "@/components/editor/skeleton-editor/Craniometrics"
+import CranialNonmetrics from "@/components/editor/skeleton-editor/CranialNonmetrics"
+import CranialInventory from '@/components/editor/skeleton-editor/CranialInventory';
 
 function Skull() {
     return(
-        <div>
-            <h3 className = "text-center">Craniometrics</h3>
-            <Tabs defaultValue = "Cranium" className = "relative w-full">
-                <TabsList className = "grid w-full grid-cols-2">
-                    <TabsTrigger value="Cranium">Cranium</TabsTrigger>
-                    <TabsTrigger value="Mandible">Mandible</TabsTrigger>
-                </TabsList>
-                <TabsContent value="Cranium">
-                    <Table.Root>
-                        <Table.Header>
-                            <Table.Row>
-                                <Table.ColumnHeaderCell>Measurement</Table.ColumnHeaderCell>
-			                    <Table.ColumnHeaderCell>Landmarks</Table.ColumnHeaderCell>
-			                    <Table.ColumnHeaderCell>Abbv.</Table.ColumnHeaderCell>
-                                <Table.ColumnHeaderCell>Input</Table.ColumnHeaderCell>
-                            </Table.Row>
-                        </Table.Header>
+        <div className = "flex flex-col h-screen col-span-2 lg:col-span-4 space-y-4 bg-gray-100/10">
 
-                        <Table.Body>
-                            {craniometrics_list.metrics_cranium.map((info, i) => 
-                            <Table.Row>
-                                <Table.RowHeaderCell>{info.split("\t")[0]}</Table.RowHeaderCell>
-                                <Table.Cell>{info.split("\t")[1]}</Table.Cell>
-                                <Table.Cell>{info.split("\t")[2]}</Table.Cell>
-                                <Table.Cell>
-                                    <TextField.Root type="number"/>
-                                </Table.Cell>
-                            </Table.Row>)}
-                        </Table.Body>
-                    </Table.Root>
-                </TabsContent>
-                <TabsContent value="Mandible">
-                    <Table.Root>
-                        <Table.Header>
-                            <Table.Row>
-                                <Table.ColumnHeaderCell>Measurement</Table.ColumnHeaderCell>
-			                    <Table.ColumnHeaderCell>Landmarks</Table.ColumnHeaderCell>
-			                    <Table.ColumnHeaderCell>Abbv.</Table.ColumnHeaderCell>
-                                <Table.ColumnHeaderCell>Input</Table.ColumnHeaderCell>
-                            </Table.Row>
-                        </Table.Header>
+            <div className="flex justify-center px-4">
+                
+                <Tabs defaultValue="Craniometrics" className="relative w-full">
+                    <TabsList className = "grid w-full grid-cols-3">
+                        <TabsTrigger value="Craniometrics">Metrics</TabsTrigger>
+                        <TabsTrigger value="Cranial Nonmetrics">Nonmetrics</TabsTrigger>
+                        <TabsTrigger value="Cranial Inventory">Inventory</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="Craniometrics">
+                        <Craniometrics/>
+                    </TabsContent>
+                    <TabsContent value="Cranial Nonmetrics">
+                        <CranialNonmetrics/>
+                    </TabsContent>
+                    <TabsContent value="Cranial Inventory">
+                        <CranialInventory/>
+                    </TabsContent>
+                </Tabs>
 
-                        <Table.Body>
-                            {craniometrics_list.metrics_mandible.map((info, i) => 
-                            <Table.Row>
-                                <Table.RowHeaderCell>{info.split("\t")[0]}</Table.RowHeaderCell>
-                                <Table.Cell>{info.split("\t")[1]}</Table.Cell>
-                                <Table.Cell>{info.split("\t")[2]}</Table.Cell>
-                                <Table.Cell>
-                                    <TextField.Root type="number"/>
-                                </Table.Cell>
-                            </Table.Row>)}
-                        </Table.Body>
-                    </Table.Root>
-                </TabsContent>
-            </Tabs>
+            </div>
         </div>
+
     )
 } export default Skull
