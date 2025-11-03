@@ -17,6 +17,14 @@ interface LocalityData {
     region: string;
 }
 
+interface TaphonomyData {
+    staining: string[];
+    surface_damage: string[];
+    adherent_materials: string[];
+    curation_modifications: string[];
+    cultural_modifications: string[];
+}
+
 interface BoneDataContextType {
     formData: FormData;
     setFormData: React.Dispatch<React.SetStateAction<FormData>>;
@@ -96,7 +104,11 @@ export function BoneDataProvider({ children }: { children: ReactNode }) {
         
         try {
             console.log('Sending request to backend...');
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bones/complete`, {
+            
+            // Extract taphonomy data from measurements
+            const { taphonomy, ...otherMeasurements } = measurements;
+            
+            const response = await fetch('http://localhost:3001/api/bones/complete', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -109,7 +121,8 @@ export function BoneDataProvider({ children }: { children: ReactNode }) {
                     sex: formData.sex,
                     user: formData.user,
                     localityData: localityData,
-                    measurements: measurements
+                    measurements: otherMeasurements,
+                    taphonomy: taphonomy // Send taphonomy separately
                 })
             });
 

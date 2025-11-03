@@ -16,6 +16,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const {RateLimiterMemory} = require('rate-limiter-flexible');
+const { saveTaphonomyData, loadTaphonomyData, deleteTaphonomyData } = require('./taphonomyHelpers');
+
 
 const rateLimiter = new RateLimiterMemory({
   points: 60,       // 60 requests
