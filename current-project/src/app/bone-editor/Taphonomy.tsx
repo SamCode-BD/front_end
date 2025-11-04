@@ -148,40 +148,29 @@ function Taphonomy(props) {
         }
     }
 
-        return(
-            <div>
-                <div className = "w-1/2 justify-left">
-                    <label htmlFor="bone-cond">Bone Condition: </label>
-                    <div className="mt-1 flex gap-2 text-left">
-                        <Input className="w-1/2" id="bone-cond"/>
-                        <Button className="bg-maroon hover:bg-maroon/90">?</Button>
-                    </div>
-                    <div className="flex mt-4 gap-2">
-                        <input type="checkbox"/>
-                        <p className = "" >Surface Exposure </p>
-                    </div>
-                </div>
-                <div className = "flex flex-col md:w-full md:flex-row mt-4 justify-center items-center [padding-inline:10px] gap-2">
-                    <div className = "flex w-full gap-2">
-                        <Button variant="outline" onClick={() => setActiveSubmenu("bone color")}>Bone Color</Button>
-                        <Button variant="outline" onClick={() => setActiveSubmenu("staining")}>Staining</Button>
-                        <Button variant="outline" onClick={() => setActiveSubmenu("surface damage")}>Surface Damage</Button>
-                    </div>
-                    <div className="flex w-full gap-2">
-                        <Button variant="outline" onClick={() => setActiveSubmenu("adherent materials")}>Adherent Materials</Button>
-                        <Button variant="outline" onClick={() => setActiveSubmenu("modifications")}>Modifications</Button>
-                        <Button variant="outline" onClick={() => setActiveSubmenu("comments")}>Comments</Button>
-                    </div>
-                </div>
-                {getContents()}
-                
-                {/* Debug view - remove this in production */}
-                <div className="mt-4 p-4 bg-gray-100 rounded text-xs">
-                    <p className="font-semibold">Current Taphonomy State (Debug):</p>
-                    <pre>{JSON.stringify(taphonomy, null, 2)}</pre>
-                </div>
+    return(
+    <div>
+        <div className = "[padding-inline:10px]">
+            <label htmlFor="bone-cond">Bone Condition: </label>
+            <div className="mt-1 flex gap-2 text-left">
+                <Input className="w-1/4" id="bone-cond"/>
+                <Button className="bg-maroon hover:bg-maroon/90">?</Button>
             </div>
-        );
-    
-}
-export default Taphonomy
+            <div className="flex mt-4 gap-2">
+                <input type="checkbox"/>
+                <p className = "" >Surface Exposure </p>
+            </div>
+        </div>
+        <div className = "flex flex-wrap mt-4 items-center justify-start [padding-inline:10px] gap-2">
+            <Button variant="outline" onClick={() => setActiveSubmenu("bone color")}>Bone Color</Button>
+            <Button variant="outline" onClick={() => setActiveSubmenu("staining")}>Staining</Button>
+            <Button variant="outline" onClick={() => setActiveSubmenu("surface damage")}>Surface Damage</Button>
+            <Button variant="outline" onClick={() => setActiveSubmenu("adherent materials")}>Adherent Materials</Button>
+            <Button variant="outline" onClick={() => setActiveSubmenu("modifications")}>Modifications</Button>
+            <Button variant="outline" onClick={() => setActiveSubmenu("comments")}>Comments</Button>
+        </div>
+        {getContents()}
+        
+    </div>
+    );
+} export default Taphonomy
