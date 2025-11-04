@@ -749,7 +749,10 @@ app.post(`/api/${table}/:id`, authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'No valid fields' });
     }
     db.query(`UPDATE ${table} SET ? WHERE ${pk} = ?`, [body, req.params.id], (err, result) => {
-      if (err) return res.status(500).json({ error: err.message });
+      if (err) { 
+        console.error("Error in app.put:", err);
+        return res.status(500).json({ error: err.message });
+      }
       res.json({ id: req.params.id, ...body });
     });
   });

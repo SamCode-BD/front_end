@@ -30,7 +30,7 @@ export async function saveSkeletonData(API_URL_ROOT: string, api: EditSkeletonAP
       country: api.locality.country || "",
       locality: api.locality.locality || "",
       region: api.locality.region || "",
-      sex: api.specimen.sex || "",
+      sex: api.specimen.sex || "unknown",
       user_id: api.user.user_id || null,
     };
 
